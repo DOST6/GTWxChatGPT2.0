@@ -70,6 +70,48 @@ class App extends BaseController
             ];
         }
         $data['next_round'] = false;
+        return view('app_view', $data);
+    }
+
+    public function test() {
+
+        if($this->request->getMethod() == 'post') {
+
+            $post_data = $this->request->getPost();
+            if($post_data['name'] != "") {
+                $session_data = [
+                    'started' => TRUE,
+                    'player_name' => $post_data['name'],
+                    'category' => array(),
+                    'secret_word' => "",
+                    'clues' => array(),
+                    'guessed' => FALSE,
+                    'num_attempts' => 0,
+                    'num_games_played' => 0,
+                    'num_wins' => 0
+                ];
+                session()->set($session_data);
+            }
+        }
+
+        if(session()->get("started") == true) {
+            $data = $this->get_game_stats();
+            $data['player_name'] = session()->get("player_name");
+            $data['started'] = TRUE;
+        } else {
+            $data = [
+                'started' => FALSE,
+                'player_name' => "Player",
+                'category' => array(),
+                'secret_word' => "",
+                'clues' => array(),
+                'guessed' => FALSE,
+                'num_attempts' => 0,
+                'num_games_played' => 0,
+                'num_wins' => 0
+            ];
+        }
+        $data['next_round'] = false;
         return view('test', $data);
     }
 
@@ -242,7 +284,7 @@ class App extends BaseController
         return $clues_arr;
     }
 
-    public function test() {
+    public function test_x() {
         //echo $this->chatGPT();
         $data = array();
         $data['category'] = "category";

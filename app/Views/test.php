@@ -2,7 +2,7 @@
 <html>
     <head>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Guess the Word with ChatGPT</title>
+        <title>Test: Guess the Word with ChatGPT</title>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
     </head>
     <body>
@@ -25,7 +25,7 @@
                     <li>If you guess the word, you earn 1 point and you can start a next round or end the game.</li>
                     <li>After the 10 clues and you have not guessed the word, the mystery word will be shown. You won't earn a point but you can start a next round or end the game.</li>
                 </ul>
-                <form method="post" action="/">        
+                <form method="post" action="test">        
                     <div>
                         Your Name: <input type="text" name="name" id="playerName" value="" <?= $started?"readonly":"" ?> required />
                         <input type="submit" id="startGame" name="startGame" value="Start Game" <?= $started?"disabled":"" ?> />
