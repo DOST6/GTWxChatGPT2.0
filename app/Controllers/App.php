@@ -248,6 +248,10 @@ class App extends BaseController
     protected function request_word($category) {
         $prompt = "Suggest one ".$category.".";
         //echo $prompt; die();
+        $word = $this->chatGPT($prompt);
+        if(substr($word,-1)==".") {
+            $word = substr($word,strlen($word)-1); //remove trailing period
+        }
         return $this->chatGPT($prompt);
     }
     
