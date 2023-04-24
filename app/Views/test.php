@@ -13,20 +13,30 @@
         <div id="content">
             <h2>Welcome<?= " ".$player_name ?>!</h2>
             
-            <div>
-                <h3>Game Stats:</h3>
-                <p>Wins: <span id="num_wins"><?= $num_wins ?></span></p>
-                <p>Rounds: <span id="num_games_played"><?= $num_games_played ?></span></p>
-                <p>Attempts this round: <span id="num_attempts"><?= $num_attempts ?></span></p>
-            </div>
-            
             <div style="display: <?= $started?"none":"block" ?>">
+                <h3>How it works:</h3>
+                <ul>
+                    <li>Enter your name and click Start Game.</li>
+                    <li>Click Get Category to let the app choose a random category.</li>
+                    <li>App will request a word from ChatGPT for the chosen category, and 10 clues for the word.</li>
+                    <li>Click Get Clue and try to guess the word.</li>
+                    <li>If you have a guess in mind, enter the word and submit your answer.</li>
+                    <li>If you guess the word, you earn 1 point and you can start a next round or end the game.</li>
+                    <li>After the 10 clues and you have not guessed the word, the mystery word will be shown. You won't earn a point but you can start a next round or end the game.</li>
+                </ul>
                 <form method="post" action="/">        
                     <div>
                         Your Name: <input type="text" name="name" id="playerName" value="" <?= $started?"readonly":"" ?> required />
                         <input type="submit" id="startGame" name="startGame" value="Start Game" <?= $started?"disabled":"" ?> />
                     </div>
                 </form>
+            </div>
+            
+            <div>
+                <h3>Game Stats:</h3>
+                <p>Wins: <span id="num_wins"><?= $num_wins ?></span></p>
+                <p>Rounds: <span id="num_games_played"><?= $num_games_played ?></span></p>
+                <p>Attempts this round: <span id="num_attempts"><?= $num_attempts ?></span></p>
             </div>
             <div>
                 <h3>Category:</h3>
