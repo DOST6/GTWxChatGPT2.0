@@ -11,7 +11,7 @@ $routes = Services::routes();
  * --------------------------------------------------------------------
  */
 $routes->setDefaultNamespace('App\Controllers');
-$routes->setDefaultController('Home');
+$routes->setDefaultController('App');
 $routes->setDefaultMethod('index');
 $routes->setTranslateURIDashes(false);
 $routes->set404Override();
@@ -19,7 +19,7 @@ $routes->set404Override();
 // where controller filters or CSRF protection are bypassed.
 // If you don't want to define all routes, please use the Auto Routing (Improved).
 // Set `$autoRoutesImproved` to true in `app/Config/Feature.php` and set the following to true.
-// $routes->setAutoRoute(false);
+//$routes->setAutoRoute(true);
 
 /*
  * --------------------------------------------------------------------
@@ -29,7 +29,19 @@ $routes->set404Override();
 
 // We get a performance increase by specifying the default
 // route since we don't have to scan directories.
-$routes->get('/', 'Home::index');
+//$routes->get('/', 'Home::index');
+$routes->get('/', 'App::index');
+$routes->post('/', 'App::index');
+//$routes->post('start_game', 'App::start_game');
+$routes->post('get_category', 'App::get_category');
+$routes->post('get_clue', 'App::get_clue');
+$routes->post('initialize_clues', 'App::initialize_clues');
+$routes->post('reveal_word', 'App::reveal_word');
+$routes->post('reset', 'App::reset');
+$routes->post('check_answer', 'App::check_answer');
+$routes->get('end_game', 'App::end_game');
+//$routes->get('chat', 'App::test');
+$routes->get('test', 'App::test');
 
 /*
  * --------------------------------------------------------------------
