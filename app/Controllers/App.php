@@ -233,10 +233,12 @@ class App extends BaseController
     }
     
     protected function request_clues($word) {
-        $prompt = "Suggest 10 statements that will serve as clue for ".$word." without using the word ".$word.".";
-        $clues = trim($this->chatGPT($prompt)); //trim to remove extra line breaks
-        $clues_arr = explode("\n", $clues);
-
+        $clues_arr = array();
+        if($word != "") {
+            $prompt = "Suggest 10 statements that will serve as clue for ".$word." without using the word ".$word.".";
+            $clues = trim($this->chatGPT($prompt)); //trim to remove extra line breaks
+            $clues_arr = explode("\n", $clues);
+        }
         return $clues_arr;
     }
 
