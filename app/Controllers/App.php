@@ -31,7 +31,7 @@ class App extends BaseController
         ['categoryTitle'=>"Fictional characters", 'noun'=>"fictional character"]
     ];
 
-    public function index() {
+    public function _test() {
 
         if($this->request->getMethod() == 'post') {
 
@@ -73,7 +73,7 @@ class App extends BaseController
         return view('app_view', $data);
     }
 
-    public function test() {
+    public function index() {
 
         if($this->request->getMethod() == 'post') {
 

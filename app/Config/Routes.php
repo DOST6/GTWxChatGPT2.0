@@ -36,13 +36,23 @@ $routes->post('/', 'App::index');
 $routes->post('get_category', 'App::get_category');
 $routes->post('get_clue', 'App::get_clue');
 $routes->post('initialize_clues', 'App::initialize_clues');
-$routes->post('reveal_word', 'App::reveal_word');
+//$routes->post('reveal_word', 'App::reveal_word');
 $routes->post('reset', 'App::reset');
 $routes->post('check_answer', 'App::check_answer');
 $routes->get('end_game', 'App::end_game');
 //$routes->get('chat', 'App::test');
-$routes->get('test', 'App::test');
-$routes->post('test', 'App::test');
+//$routes->get('test', 'App::test');
+//$routes->post('test', 'App::test');
+
+
+$routes->get('api', 'Api::index');
+$routes->post('api', 'Api::index');
+$routes->post('api/get_category', 'Api::get_category');
+$routes->post('api/get_clue', 'Api::get_clue');
+$routes->post('api/initialize_clues', 'Api::initialize_clues');
+$routes->post('api/reset', 'Api::reset');
+$routes->post('api/check_answer', 'Api::check_answer');
+$routes->get('api/end_game', 'Api::end_game');
 
 /*
  * --------------------------------------------------------------------
