@@ -46,9 +46,8 @@ class App extends BaseController
                     'guessed' => FALSE,
                     'num_attempts' => 0,
                     'num_games_played' => 0,
-                    //'num_wins' => 0
+                    'num_wins' => 0
                 ];
-                //session()->start();
                 session()->set($session_data);
             }
         }
@@ -70,17 +69,7 @@ class App extends BaseController
                 'num_wins' => 0
             ];
         }
-        //$data = $this->get_game_stats();
-        //$player_name = session()->get("player_name")==""?"Player":session()->get("player_name");
-        //$data['player_name'] = $player_name;
-        //$data['started'] = session()->get("started");
         $data['next_round'] = false;
-            //'started' => FALSE,
-            //'num_attempts' => 0,
-            //'num_games_played' => 0,
-            //'num_wins' => 0,
-            //'guessed' => FALSE
-        //];
         return view('test', $data);
     }
 
@@ -99,7 +88,6 @@ class App extends BaseController
                 //'num_wins' => 0
                 'next_round' => false,
             ];
-            //session()->start();
             session()->set($data);
         }
     }
@@ -116,7 +104,6 @@ class App extends BaseController
             'num_games_played' => 0,
             'num_wins' => 0
         ];
-        //session()->start();
         session()->set($session_data);
         return redirect()->to("/");
     }
@@ -125,12 +112,9 @@ class App extends BaseController
         //$data = array();
         if($this->request->getMethod() == 'post') {
             $num_games_played = session()->get("num_games_played");
+
             $category = $this->categories[rand(0,19)];
-            //$secret_word = $this->request_word($category['noun']);
-            //$word_clues = $this->request_clues($secret_word);
-            //$data['category'] = $category;
-            //$data['secret_word'] = $secret_word;
-            //$data['clues'] = $word_clues;
+
             session()->set(['num_games_played'=>($num_games_played+1)]);
             session()->set(['category'=>$category]);
 
@@ -183,7 +167,6 @@ class App extends BaseController
                         session()->set(['guessed'=>TRUE]);
                         $data['next_round'] = true;
                         return $this->response->setJSON($data);
-                        //return $this->response->setJSON(['secret_word'=>$secret_word]);
                     } else {
                         $data['next_round'] = false;
                         $data['message'] = "Sorry, wrong answer. Get another clue.";
@@ -232,12 +215,6 @@ class App extends BaseController
     protected function get_game_stats() {
         
         $data = [
-            ///'started' => TRUE,
-            //'player_name' => $post_data['name'],
-            //'category' => array(),
-            //'secret_word' => "",
-            //'clues' => array(),
-            //'guessed' => FALSE,
             'num_attempts' => session()->get('num_attempts'),
             'num_games_played' => session()->get('num_games_played'),
             'num_wins' => session()->get('num_wins')
@@ -259,10 +236,6 @@ class App extends BaseController
         $prompt = "Suggest 10 statements that will serve as clue for ".$word." without using the word ".$word.".";
         $clues = trim($this->chatGPT($prompt)); //trim to remove extra line breaks
         $clues_arr = explode("\n", $clues);
-        //echo "<pre>";
-        //var_dump($clues);
-        //echo "</pre><pre>";
-        //print_r(trim($clues)); die();
 
         return $clues_arr;
     }
@@ -297,27 +270,8 @@ class App extends BaseController
 
     private function chatGPT($prompt="Say this is a test") {
 
-        //echo $prompt; die();
-
         $OPENAI_API_KEY = getenv('OPENAI_API_KEY');
 
-        //echo $OPENAI_API_KEY; die();
-
-        /* curl https://api.openai.com/v1/completions \
-        -H "Content-Type: application/json" \
-        -H "Authorization: Bearer $OPENAI_API_KEY" \
-        -d '{
-        "model": "text-davinci-003",
-        "prompt": "Say this is a test",
-        "max_tokens": 7,
-        "temperature": 0
-        }' */
-        $options = [
-            'CURLOPT_SSL_VERIFYHOST' => false,
-            'CURLOPT_SSL_VERIFYPEER' => false,
-        ];
-
-        //'cert' => ['/path/server.pem', 'password']
         $client = \Config\Services::curlrequest();
 
         $apiURL = "https://api.openai.com/v1/completions";
@@ -331,7 +285,7 @@ class App extends BaseController
             'model' => "text-davinci-003",
             'prompt' => $prompt,
             'max_tokens' => 2048, //default is 16
-            'temperature' => 1
+            'temperature' => 1.2
          );
 
         // Send request
