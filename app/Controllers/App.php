@@ -252,7 +252,7 @@ class App extends BaseController
         if(substr($word,-1)==".") {
             $word = substr($word,strlen($word)-1); //remove trailing period
         }
-        return $this->chatGPT($prompt);
+        return $word;
     }
     
     protected function request_clues($word) {
