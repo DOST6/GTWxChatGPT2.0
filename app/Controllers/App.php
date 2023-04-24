@@ -53,7 +53,8 @@ class App extends BaseController
             }
         }
         $data = $this->get_game_stats();
-        $data['player_name'] = session()->get("player_name");
+        $player_name = session()->get("player_name")==""?"Player":session()->get("player_name");
+        $data['player_name'] = $player_name;
         $data['started'] = session()->get("started");
         $data['next_round'] = false;
             //'started' => FALSE,

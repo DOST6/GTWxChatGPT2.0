@@ -20,7 +20,7 @@
                 <p>Attempts this round: <span id="num_attempts"><?= $num_attempts ?></span></p>
             </div>
             
-            <div>
+            <div style="display: <?= $started?"none":"block" ?>">
                 <form method="post" action="/">        
                     <div>
                         Your Name: <input type="text" name="name" id="playerName" value="" <?= $started?"readonly":"" ?> required />
@@ -150,6 +150,8 @@
                                 $("#getClue").prop('disabled', true);
                             }
                             //alert("Data: " + data + "\nStatus: " + status);
+                            
+                            $("#message").text("");
                         },
                         complete:function(data){
                             // Hide image container
