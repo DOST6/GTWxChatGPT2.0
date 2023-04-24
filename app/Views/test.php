@@ -15,7 +15,7 @@
             <h2>Welcome<?= " ".$player_name ?>!</h2>
             
             <div style="display: <?= $started?"none":"block" ?>">
-                <h3>How it works:</h3>
+                <h3>How to play:</h3>
                 <ul>
                     <li>Enter your name and click Start Game.</li>
                     <li>Click Get Category to let the app choose a random category.</li>
