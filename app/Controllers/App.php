@@ -52,10 +52,28 @@ class App extends BaseController
                 session()->set($session_data);
             }
         }
-        $data = $this->get_game_stats();
-        $player_name = session()->get("player_name")==""?"Player":session()->get("player_name");
-        $data['player_name'] = $player_name;
-        $data['started'] = session()->get("started");
+
+        if(session()->get("started") == true) {
+            $data = $this->get_game_stats();
+            $data['player_name'] = session()->get("player_name");
+            $data['started'] = TRUE;
+        } else {
+            $data = [
+                'started' => FALSE,
+                'player_name' => "Player",
+                'category' => array(),
+                'secret_word' => "",
+                'clues' => array(),
+                'guessed' => FALSE,
+                'num_attempts' => 0,
+                'num_games_played' => 0,
+                'num_wins' => 0
+            ];
+        }
+        //$data = $this->get_game_stats();
+        //$player_name = session()->get("player_name")==""?"Player":session()->get("player_name");
+        //$data['player_name'] = $player_name;
+        //$data['started'] = session()->get("started");
         $data['next_round'] = false;
             //'started' => FALSE,
             //'num_attempts' => 0,
