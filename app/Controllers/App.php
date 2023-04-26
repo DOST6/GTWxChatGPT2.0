@@ -15,20 +15,20 @@ class App extends BaseController
         ['categoryTitle'=>"Movies", 'noun'=>"movie"],
         ['categoryTitle'=>"TV Shows", 'noun'=>"tv show"],
         ['categoryTitle'=>"Celebrities", 'noun'=>"celebrity"],
-        ['categoryTitle'=>"Historical figures", 'noun'=>"historical figure"],
+        ['categoryTitle'=>"Songs", 'noun'=>"famous song"],
         ['categoryTitle'=>"Sports", 'noun'=>"sport"],
         ['categoryTitle'=>"Foods", 'noun'=>"food"],
         ['categoryTitle'=>"Colors", 'noun'=>"color"],
         ['categoryTitle'=>"Brands", 'noun'=>"brand"],
-        ['categoryTitle'=>"Famous landmarks", 'noun'=>"famous landmark"],
-        ['categoryTitle'=>"Musical instruments", 'noun'=>"musical instrument"],
+        ['categoryTitle'=>"Famous Scientists", 'noun'=>"scientist"],
+        ['categoryTitle'=>"Musical Instruments", 'noun'=>"musical instrument"],
         ['categoryTitle'=>"Mythological creatures", 'noun'=>"mythological creature"],
         ['categoryTitle'=>"Emotions", 'noun'=>"emotion"],
         ['categoryTitle'=>"Occupations", 'noun'=>"occupation"],
-        ['categoryTitle'=>"Vehicles", 'noun'=>"vehicle"],
+        ['categoryTitle'=>"Planets", 'noun'=>"planet"],
         ['categoryTitle'=>"Hobbies", 'noun'=>"hobby"],
-        ['categoryTitle'=>"Famous paintings", 'noun'=>"famous painting"],
-        ['categoryTitle'=>"Fictional characters", 'noun'=>"fictional character"]
+        ['categoryTitle'=>"Singer", 'noun'=>"famous singer"],
+        ['categoryTitle'=>"Fictional Characters", 'noun'=>"fictional character"]
     ];
 
     public function _test() {
@@ -160,12 +160,17 @@ class App extends BaseController
             session()->set(['num_games_played'=>($num_games_played+1)]);
             session()->set(['category'=>$category]);
 
-            $secret_word = $this->request_word($category['noun']);
-            session()->set(['secret_word'=>$secret_word]);
+            /* $secret_word = "";
+            while(strlen($secret_word) <= 1) {
+                $secret_word = $this->request_word($category['noun']);
+            }
+            session()->set(['secret_word'=>$secret_word]); */
 
-            $clues_arr = $this->request_clues($secret_word);
+
+
+            //$clues_arr = $this->request_clues($secret_word);
             //print_r($clues_arr); die();
-            session()->set(['clues'=>$clues_arr]);
+            //session()->set(['clues'=>$clues_arr]);
 
             $data = $this->get_game_stats();
             $data['categoryTitle'] = $category['categoryTitle'];
@@ -191,6 +196,20 @@ class App extends BaseController
             if($secret_word != "") {
                 $clues_arr = $this->request_clues(session()->get("secret_word"));
                 session()->set(['clues'=>$clues_arr]);
+                return $this->response->setJSON($clues_arr);
+            }
+        }
+    }
+    public function initialize_word() {
+        if($this->request->getMethod() == 'post') {
+            $category = session()->get("category");
+            if($category != "" ){
+                $secret_word = "";
+                while(strlen($secret_word) <= 1) {
+                    $secret_word = $this->request_word($category['noun']);
+                }
+                session()->set(['secret_word'=>$secret_word]);
+                return $this->response->setJSON(['secret_word'=>$secret_word]);
             }
         }
     }
@@ -247,6 +266,7 @@ class App extends BaseController
                     $data = $this->get_game_stats();
                     $data['clue'] = $clues_arr[$num_attempt];
                     $data['next_round'] = false;
+                    $data['secret_word'] = session()->get('secret_word');
                     return $this->response->setJSON($data);
                     //return $this->response->setJSON(['clue'=>$clues_arr[$num_attempt]]);
                 }
@@ -265,9 +285,9 @@ class App extends BaseController
     }
 
     protected function request_word($category) {
-        $prompt = "Suggest one ".$category.".";
+        $prompt = "Suggest a ".$category.".";
         //echo $prompt; die();
-        $word = $this->chatGPT($prompt);
+        $word = $this->chatGPT($prompt, round($this->rand_float(0.01,2.00),2) );
         if(substr($word,-1)==".") {
             $word = substr($word,strlen($word)-1); //remove trailing period
         }
@@ -276,7 +296,7 @@ class App extends BaseController
     
     protected function request_clues($word) {
         $clues_arr = array();
-        if($word != "") {
+        if(strlen($word) > 1) {
             $prompt = "Suggest 10 statements that will serve as clue for ".$word." without using the word ".$word.".";
             $clues = trim($this->chatGPT($prompt)); //trim to remove extra line breaks
             $clues_arr = explode("\n", $clues);
@@ -312,7 +332,7 @@ class App extends BaseController
         }
     }
 
-    private function chatGPT($prompt="Say this is a test") {
+    private function chatGPT($prompt="Say this is a test", $temperature=0.8) {
 
         $OPENAI_API_KEY = getenv('OPENAI_API_KEY');
 
@@ -329,7 +349,7 @@ class App extends BaseController
             'model' => "text-davinci-003",
             'prompt' => $prompt,
             'max_tokens' => 2048, //default is 16
-            'temperature' => 1.2
+            'temperature' => $temperature
          );
 
         // Send request
@@ -358,5 +378,10 @@ class App extends BaseController
            echo "failed";
            die;
         }
+    }
+
+    private function rand_float($st_num=0,$end_num=1,$mul=1000000) {
+        if ($st_num>$end_num) return false;
+        return mt_rand($st_num*$mul,$end_num*$mul)/$mul;
     }
 }
