@@ -60,7 +60,19 @@ class Api extends BaseController
     }
 
     public function end_game() { //Aldwin
-    
+        $session_data = [
+            'started' => FALSE,
+            'player_name' => "Player",
+            'category' => array(),
+            'secret_word' => "",
+            'clues' => array(),
+            'guessed' => FALSE,
+            'num_attempts' => 0,
+            'num_games_played' => 0,
+            'num_wins' => 0
+        ];
+        session()->set($session_data);
+        return redirect()->to("/");
     }
 
     protected function get_game_stats() { //Aldwin
