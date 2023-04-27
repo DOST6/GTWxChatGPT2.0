@@ -25,7 +25,7 @@
                     <li>If you guess the word, you earn 1 point and you can start a next round or end the game.</li>
                     <li>After the 10 clues and you have not guessed the word, the mystery word will be shown. You won't earn a point but you can start a <b>next round</b> or <b>end the game</b>.</li>
                 </ul>
-                <form method="post" action="/">        
+                <form method="post" action="<?= base_url()?>/">        
                     <div>
                         Your Name: <input type="text" name="name" id="playerName" value="" <?= $started?"readonly":"" ?> required />
                         <input type="submit" id="startGame" name="startGame" value="Start Game" <?= $started?"disabled":"" ?> />
