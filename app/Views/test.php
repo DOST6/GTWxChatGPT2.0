@@ -7,8 +7,8 @@
     </head>
     <body>
         <!-- Image loader -->
-        <div id='loader' style='display: none; z-index: 10; width: 100%; height: 100%; position: absolute; left: 0; top: 0;'>
-            <div style="margin: auto;"><img src='loading.gif'></div>
+        <div id='loader' style='display: none; z-index: 10; width: 100%; height: 100%;  margin: auto'>
+            <div style="text-align: center"><img src='loading.gif'></div>
         </div>
 
         <div id="content">
@@ -38,25 +38,25 @@
                 <p>Wins: <span id="num_wins"><?= $num_wins ?></span></p>
                 <p>Rounds: <span id="num_games_played"><?= $num_games_played ?></span></p>
                 <p>Attempts this round: <span id="num_attempts"><?= $num_attempts ?></span></p>
+                <button id="getCategory" <?= $started?"":"disabled" ?> >Start Round</button>
             </div>
             <div>
                 <h3>Category:</h3>
                 <h2><span id="category" style="color: blue"> <span></h2>  
-                <button id="getCategory" <?= $started?"":"disabled" ?> >Start Round</button>
             </div>
 
             <div>
                 <h3>Clue:</h3><h2><span id="clue" style="color: blue"> </span></h2>
-                <div><button id="getClue" <?= $started?"":"disabled" ?> >Get Clue</button></div>
             </div>
 
             <div>
                 <h3>Your Guess: <input type="text" id="guess" name="guess" /></h3>
-                <div><button id="checkAnswer" <?= $started?"":"disabled" ?> >Submit Answer</button></div>
+                <div><button id="checkAnswer" <?= $started?"":"disabled" ?> >Submit Answer</button>
+                <button id="getClue" <?= $started?"":"disabled" ?> >Get Clue</button></div>
                 
                 <h2><span id="message" style="color: red"></span></h2>
             <div>
-                <button id="reset" <?= $started?"":"disabled" ?> >Next Round</button> <button id="end" <?= $started?"":"disabled" ?> onclick="location.href='<?= base_url() ?>end_game'" >End Game</button></div>
+                <button id="reset" <?= $started?"":"disabled" ?> >Next Round</button> <button id="endGame" <?= $started?"":"disabled" ?> >End Game</button></div>
             </div>
         </div>
         <script>
@@ -76,6 +76,9 @@
                         },
                         success: function ( data, status, jqXhr ) {
                             console.log(data);
+                            if(data.error != undefined) {
+                                console.log(data.error);
+                            }
                             $("#category").text(data.categoryTitle);
                             $("#num_games_played").text(data.num_games_played);
                             $("#num_attempts").text(data.num_attempts);
@@ -91,6 +94,9 @@
                                 $("#getClue").prop('disabled', false);
                                 $("#checkAnswer").prop('disabled', false);
                             }
+                        },
+                        error: function (jqXHR, textStatus, errorThrown) {
+                            console.log(errorThrown);
                         }
                     }),
                     ajxWord = ajxCategory.then(function(data) {
@@ -98,7 +104,13 @@
                             url: '<?= base_url() ?>initialize_word',
                             type: 'post',
                             success: function( data, status, jqXhr) {
-                            console.log(data);
+                                console.log(data);
+                                if(data.error != undefined) {
+                                    console.log(data.error);
+                                }
+                            },
+                            error: function (jqXHR, textStatus, errorThrown) {
+                                console.log(errorThrown);
                             }
                         });
                     }),
@@ -107,7 +119,13 @@
                             url: '<?= base_url() ?>initialize_clues',
                             type: 'post',
                             success: function( data, status, jqXhr) {
-                            console.log(data);
+                                console.log(data);
+                                if(data.error != undefined) {
+                                    console.log(data.error);
+                                }
+                            },
+                            error: function (jqXHR, textStatus, errorThrown) {
+                                console.log(errorThrown);
                             }
                         });
 
@@ -129,8 +147,11 @@
                             $("#loader").show();
                             $("#content").hide();
                         },
-                        success: function(data,status){
+                        success: function(data,status,jqXhr){
                             console.log(data);
+                            if(data.error != undefined) {
+                                console.log(data.error);
+                            }
                             $("#clue").text(data.clue);
                             $("#num_games_played").text(data.num_games_played);
                             $("#num_attempts").text(data.num_attempts);
@@ -149,16 +170,19 @@
                             // Hide image container
                             $("#loader").hide();
                             $("#content").show();
+                        },
+                        error: function (jqXHR, textStatus, errorThrown) {
+                            console.log(errorThrown);
                         }
                     });
                 });
 
                 $("#checkAnswer").click(function(){
-                    $("#checkAnswer").prop('disabled', true);
-                    $("#guess").prop('readonly', true);
                     let guess = $("#guess").val();
                     console.log(guess);
                     if(guess != "") {
+                        $("#checkAnswer").prop('disabled', true);
+                        $("#guess").prop('readonly', true);
                         $.post("<?= base_url() ?>check_answer",
                         {
                             answer: guess,
@@ -174,29 +198,38 @@
                                 $("#getClue").prop('disabled', true);
                             }
                         });
+                    } else {
+                        alert("Input answer");
                     }
                 });
 
 
                 $("#reset").click(function(){
-                    $.post("<?= base_url() ?>reset",
-                    function(data,status){
-                        $("#clue").text("");
-                        $("#num_games_played").text(data.num_games_played);
-                        $("#num_attempts").text("0");
-                        $("#num_wins").text(data.num_wins);
-                        $("#mystery_word").text("");
-                        $("#category").text("");
-                        $("#getCategory").prop('disabled', false);
-                        $("#reset").prop('disabled', true);
-                        $("#revealWord").prop('disabled', true);
-                        $("#getClue").prop('disabled', true);
-                        $("#startGame").prop('disabled', true);
-                        $("#checkAnswer").prop('disabled', true);
-                        $("#message").text("");
-                    });
+                    if(confirm("Next Round?")) {
+                        $.post("<?= base_url() ?>reset",
+                        function(data,status){
+                            $("#clue").text("");
+                            $("#num_games_played").text(data.num_games_played);
+                            $("#num_attempts").text("0");
+                            $("#num_wins").text(data.num_wins);
+                            $("#mystery_word").text("");
+                            $("#category").text("");
+                            $("#getCategory").prop('disabled', false);
+                            $("#reset").prop('disabled', true);
+                            $("#revealWord").prop('disabled', true);
+                            $("#getClue").prop('disabled', true);
+                            $("#startGame").prop('disabled', true);
+                            $("#checkAnswer").prop('disabled', true);
+                            $("#message").text("");
+                        });
+                    }
                 });
 
+                $('#endGame').click(function(e) {
+                    if(confirm("End Game?")) {
+                        location.href='<?= base_url() ?>end_game';
+                    }
+                });
             });
         </script>
     </body>

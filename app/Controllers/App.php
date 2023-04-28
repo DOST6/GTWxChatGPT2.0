@@ -176,8 +176,9 @@ class App extends BaseController
             $data['categoryTitle'] = $category['categoryTitle'];
             $data['next_round'] = false;
             //print_r($data); die();
-            return $this->response->setJSON($data);
-            //return $this->response->setJSON($category);
+            //return $this->response->setJSON($data);
+            //return $this->response->setJSON(['info'=>"Category set."]);
+            return $this->response->setJSON($category);
         }
     }
 
@@ -204,7 +205,8 @@ class App extends BaseController
                 $data['category'] = session()->get("category");
                 $data['word'] = $secret_word;
                 $data['clues'] = $clues_arr;
-                return $this->response->setJSON($data);
+                //return $this->response->setJSON($data);
+                return $this->response->setJSON(['info'=>"Clues set."]);
             }
         }
     }
@@ -217,7 +219,8 @@ class App extends BaseController
                     $secret_word = $this->request_word($category['noun']);
                 }
                 session()->set(['secret_word'=>$secret_word]);
-                return $this->response->setJSON(['secret_word'=>$secret_word]);
+                //return $this->response->setJSON(['secret_word'=>$secret_word]);
+                return $this->response->setJSON(['info'=>"Secret word set."]);
             }
         }
     }
@@ -278,8 +281,8 @@ class App extends BaseController
                     $data['secret_word'] = session()->get('secret_word');
                     $data['clue'] = $clues_arr[$num_attempt];
                     
-                    return $this->response->setJSON($data);
-                    //return $this->response->setJSON(['clue'=>$clues_arr[$num_attempt]]);
+                    //return $this->response->setJSON($data);
+                    return $this->response->setJSON(['clue'=>$clues_arr[$num_attempt]]);
                 }
             //}
         }
