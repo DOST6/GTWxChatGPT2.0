@@ -17,7 +17,7 @@
             <div style="display: <?= $started?"none":"block" ?>">
                 <h3>How to play:</h3>
                 <ul>
-                    <li>Enter your name and click Start Game.</li>
+                    <li>Enter your name and click <b>Start Game</b>.</li>
                     <li>Click <b>Start Round</b> to let the app choose a random category.</li>
                     <li>App will request a word from ChatGPT for the chosen category, and 10 clues for the word.</li>
                     <li>Click <b>Get Clue</b> and try to guess the word.</li>
