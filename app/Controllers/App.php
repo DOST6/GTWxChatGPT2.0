@@ -194,9 +194,17 @@ class App extends BaseController
         if($this->request->getMethod() == 'post') {
             $secret_word = session()->get("secret_word");
             if($secret_word != "") {
+                $clues_arr = array();
                 $clues_arr = $this->request_clues(session()->get("secret_word"));
-                session()->set(['clues'=>$clues_arr]);
-                return $this->response->setJSON($clues_arr);
+                if(count($clues_arr) > 0) {
+                    session()->set(['clues'=>$clues_arr]);
+                }
+
+                $data = array();                
+                $data['category'] = session()->get("category");
+                $data['word'] = $secret_word;
+                $data['clues'] = $clues_arr;
+                return $this->response->setJSON($data);
             }
         }
     }
@@ -242,7 +250,8 @@ class App extends BaseController
         $data = array();
         if($this->request->getMethod() == 'post') {
             $clues_arr = session()->get("clues");
-            if(count($clues_arr) == 0) { //clues not retrieved yet
+            //print_r($clues_arr); die();
+            /* if(count($clues_arr) == 0) { //clues not retrieved yet
                 $clues_arr = $this->request_clues(session()->get("secret_word"));
                 $num_attempt = 0;
                 session()->set(['num_attempts'=>($num_attempt+1)]);
@@ -251,9 +260,9 @@ class App extends BaseController
                 $data['clue'] = $clues_arr[$num_attempt];
                 return $this->response->setJSON($data);
                 //return $this->response->setJSON(['clue'=>$clues_arr[$num_attempt]]);
-            } else {
+            } else { */
                 //$clues_arr = session()->get("clues");
-                $num_attempt = session()->get('num_attempts');
+                $num_attempt = session()->get('num_attempts') == null? 0 : session()->get('num_attempts');
                 if($num_attempt >= count($clues_arr)) {
                     $data = $this->get_game_stats();
                     $data['clue'] = "No more clues. You lose. The answer is: ".session()->get('secret_word').". Click Next Round or End Game. ";
@@ -264,22 +273,28 @@ class App extends BaseController
                 } else {
                     session()->set(['num_attempts'=>($num_attempt+1)]);
                     $data = $this->get_game_stats();
-                    $data['clue'] = $clues_arr[$num_attempt];
+                    //$data['clue'] = $clues_arr[$num_attempt];
                     $data['next_round'] = false;
                     $data['secret_word'] = session()->get('secret_word');
+                    $data['clue'] = $clues_arr[$num_attempt];
+                    
                     return $this->response->setJSON($data);
                     //return $this->response->setJSON(['clue'=>$clues_arr[$num_attempt]]);
                 }
-            }
+            //}
         }
     }
 
     protected function get_game_stats() {
+
+        $num_attempts = (session()->get('num_attempts') != null) ?session()->get('num_attempts'):0;
+        $num_games_played = (session()->get('num_games_played') != null) ?session()->get('num_games_played'):0;
+        $num_wins = (session()->get('num_wins') != null) ?session()->get('num_wins'):0;
         
         $data = [
-            'num_attempts' => session()->get('num_attempts'),
-            'num_games_played' => session()->get('num_games_played'),
-            'num_wins' => session()->get('num_wins')
+            'num_attempts' => $num_attempts,
+            'num_games_played' => $num_games_played,
+            'num_wins' => $num_wins
         ];
         return $data;
     }

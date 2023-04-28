@@ -25,7 +25,7 @@
                     <li>If you guess the word, you earn 1 point and you can start a next round or end the game.</li>
                     <li>After the 10 clues and you have not guessed the word, the mystery word will be shown. You won't earn a point but you can start a <b>next round</b> or <b>end the game</b>.</li>
                 </ul>
-                <form method="post" action="/">        
+                <form method="post" action="<?= base_url()?>">        
                     <div>
                         Your Name: <input type="text" name="name" id="playerName" value="" <?= $started?"readonly":"" ?> required />
                         <input type="submit" id="startGame" name="startGame" value="Start Game" <?= $started?"disabled":"" ?> />
@@ -75,7 +75,7 @@
                             $("#content").hide();
                         },
                         success: function ( data, status, jqXhr ) {
-                            //console.log(data);
+                            console.log(data);
                             $("#category").text(data.categoryTitle);
                             $("#num_games_played").text(data.num_games_played);
                             $("#num_attempts").text(data.num_attempts);
@@ -98,7 +98,7 @@
                             url: '<?= base_url() ?>initialize_word',
                             type: 'post',
                             success: function( data, status, jqXhr) {
-                                //console.log(data);
+                            console.log(data);
                             }
                         });
                     }),
@@ -107,7 +107,7 @@
                             url: '<?= base_url() ?>initialize_clues',
                             type: 'post',
                             success: function( data, status, jqXhr) {
-                                //console.log(data);
+                            console.log(data);
                             }
                         });
 
@@ -130,7 +130,7 @@
                             $("#content").hide();
                         },
                         success: function(data,status){
-                            //console.log(data);
+                            console.log(data);
                             $("#clue").text(data.clue);
                             $("#num_games_played").text(data.num_games_played);
                             $("#num_attempts").text(data.num_attempts);
