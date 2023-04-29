@@ -115,6 +115,21 @@ class Api extends BaseController
         }
     }
 
+    public function initialize_word() {
+        if($this->request->getMethod() == 'post') {
+            $category = session()->get("category");
+            if($category != "" ){
+                $secret_word = "";
+                while(strlen($secret_word) <= 1) {
+                    $secret_word = $this->request_word($category['noun']);
+                }
+                session()->set(['secret_word'=>$secret_word]);
+                //return $this->response->setJSON(['secret_word'=>$secret_word]);
+                return $this->response->setJSON(['info'=>"Secret word set."]);
+            }
+        }
+    }
+
     public function get_clue()
     { //Joseph
 
@@ -127,21 +142,6 @@ class Api extends BaseController
 
     public function reset()
     { //Hannah
-
-    }
-
-    public function end_game()
-    { //Aldwin
-
-    }
-
-    protected function get_game_stats()
-    { //Aldwin
-       
-    }
-
-    protected function request_word($category)
-    { //Pao
 
     }
 
@@ -220,5 +220,10 @@ class Api extends BaseController
            die;
         }
 
+    }
+
+    private function rand_float($st_num=0,$end_num=1,$mul=1000000) {
+        if ($st_num>$end_num) return false;
+        return mt_rand($st_num*$mul,$end_num*$mul)/$mul;
     }
 }
