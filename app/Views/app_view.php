@@ -7,6 +7,7 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
     <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
         body,
         h1,
@@ -52,7 +53,7 @@
         </div>
         <div class="w3-bar-block">
             <a href="#" onclick="w3_close()" class="w3-bar-item w3-button w3-hover-white">Home</a>
-            <a href="#instructions" onclick="w3_close()" class="w3-bar-item w3-button w3-hover-white">Instructions</a>
+            <a href="#instructions" onclick="w3_close(); document.getElementById('instructions_modal').style.display='block'; " class="w3-bar-item w3-button w3-hover-white">Instructions</a>
             <a href="#game" onclick="w3_close()" class="w3-bar-item w3-button w3-hover-white">Game</a>
             <!--<a href="#packages" onclick="w3_close()" class="w3-bar-item w3-button w3-hover-white">Packages</a>-->
             <a href="#contact" onclick="w3_close()" class="w3-bar-item w3-button w3-hover-white">Group Members</a>
@@ -70,49 +71,70 @@
         id="myOverlay"></div>
 
     <!-- Image loader -->
-    <div id='loader'
-        style='display: none; z-index: 10; width: 100%; height: 100%; position: absolute; left: 0; top: 0;'>
-        <div style="margin: auto;"><img src='loading.gif'></div>
+    <div id='loader' class="w3-overlay w3-black w3-opacity" style="z-index: 100">
+        <div class="w3-center w3-padding-top-48"><img class="w3-image" src='loader_red.gif'></div>
     </div>
 
     <!-- !PAGE CONTENT! -->
-    <div class="w3-main" style="margin-left:340px;margin-right:40px">
+    <div class="w3-main" style="margin-left:340px;margin-right:40px" id="content">
 
         <!-- Header -->
-        <div class="w3-container" style="margin-top:80px" id="showcase">
+        <div class="w3-container" style="margin-top:20px" id="showcase">
             <h1 class="w3-jumbo"><b>Guess the word</b></h1>
             <h1 class="w3-xxxlarge w3-text-red"><b>with ChatGPT.</b></h1>
             <!-- <hr style="width:100px;border:5px solid red" class="w3-round"> -->
         </div>
 
-        <!-- Instructions -->
-        <div class="w3-container" id="instructions" style="margin-top:75px">
-            <h1 class="w3-xxxlarge w3-text-red"><b>Instructions.</b></h1>
-            <hr style="width:100px;border:5px solid red" class="w3-round">
-            <h2>Welcome!</h2>
+        <!-- Instructions-->
+        <div style="display: <?= $started?"none":"block" ?>">
+            <div class="w3-container" >
+                <h1 class="w3-xxxlarge w3-text-red"><b>Instructions.</b></h1>
+                <hr style="width:100px;border:5px solid red" class="w3-round">
 
-            <h3>How to play:</h3>
-            <ul>
-                <li>Enter your name and click Start Game.</li>
-                <li>Click <b>Start Round</b> to let the app choose a random category.</li>
-                <li>App will request a word from ChatGPT for the chosen category, and 10 clues for the word.</li>
-                <li>Click <b>Get Clue</b> and try to guess the word.</li>
-                <li>If you have a guess in mind, enter the word and <b>submit your answer</b>.</li>
-                <li>If you guess the word, you earn 1 point and you can start a next round or end the game.</li>
-                <li>After the 10 clues and you have not guessed the word, the mystery word will be shown. You won't earn
-                    a point but you can start a <b>next round</b> or <b>end the game</b>.</li>
-            </ul>
+                <h3>How to play:</h3>
+                <ul>
+                    <li>Enter your name and click <b>Start Game</b>.</li>
+                    <li>Click <b>Start Round</b> to let the app choose a random category.</li>
+                    <li>App will request a word from ChatGPT for the chosen category, and 10 clues for the word.</li>
+                    <li>Click <b>Get Clue</b> and try to guess the word.</li>
+                    <li>If you have a guess in mind, enter the word and <b>submit your answer</b>.</li>
+                    <li>If you guess the word, you earn 1 point and you can start a <b>next round</b> or <b>end the game</b>.</li>
+                    <li>After the 10 clues and you have not guessed the word, the mystery word will be shown. You won't earn
+                        a point but you can start a <b>next round</b> or <b>end the game</b>.</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Instructions Modal-->
+        <div id="instructions_modal" class="w3-modal">
+            <div class="w3-container w3-padding-large w3-padding-24 w3-modal-content w3-card-4" id="instructions">
+                <span onclick="document.getElementById('instructions_modal').style.display='none'" class="w3-button w3-display-topright w3-xxlarge w3-hover-red">&times;</span>
+                <h1 class="w3-xxxlarge w3-text-red"><b>Instructions.</b></h1>
+                <hr style="width:100px;border:5px solid red" class="w3-round">
+
+                <h3>How to play:</h3>
+                <ul>
+                    <li>Enter your name and click <b>Start Game</b>.</li>
+                    <li>Click <b>Start Round</b> to let the app choose a random category.</li>
+                    <li>App will request a word from ChatGPT for the chosen category, and 10 clues for the word.</li>
+                    <li>Click <b>Get Clue</b> and try to guess the word.</li>
+                    <li>If you have a guess in mind, enter the word and <b>submit your answer</b>.</li>
+                    <li>If you guess the word, you earn 1 point and you can start a <b>next round</b> or <b>end the game</b>.</li>
+                    <li>After the 10 clues and you have not guessed the word, the mystery word will be shown. You won't earn
+                        a point but you can start a <b>next round</b> or <b>end the game</b>.</li>
+                </ul>
+            </div>
         </div>
 
         <!-- Game -->
-        <div class="w3-container" id="game" style="margin-top:50px">
+        <div class="w3-container" id="game" style="margin-top:0px">
             <h1 class="w3-xxxlarge w3-text-red"><b>Game.</b></h1>
             <hr style="width:100px;border:5px solid red" class="w3-round">
             <h2>Let's Play
                 <?= " " . $player_name ?>!
             </h2>
             <div style="display: <?= $started ? "none" : "block" ?>">
-                <form method="post" action="<?= base_url('api') ?>/">
+                <form method="post" action="<?= base_url('test') ?>">
                     <label>Enter your name:</label>
                     <input class="w3-input w3-border" type="text" name="name" id="playerName" value="" <?= $started ? "readonly" : "" ?> required />
                     <button class="w3-button w3-block w3-padding-large w3-red w3-margin-bottom" type="submit"
@@ -120,26 +142,25 @@
 
                 </form>
             </div>
-            <div class="w3-row-padding" style="display: <?= $started ? "block" : "none" ?>">
-                <button class="w3-button w3-blue w3-block w3-padding-large" id="getCategory" <?= $started ? "" : "disabled" ?>>Start
-                    Round</button>
+            <div class="w3-row" style="display: <?= $started ? "block" : "none" ?>">
+                <button href="#game" class="w3-button w3-blue w3-block w3-padding-large" id="getCategory" <?= $started ? "" : "disabled" ?>>Start Round</button>
             </div>
 
             <!-- Category and Clue -->
-            <div class="w3-row-padding" style="margin-top:30px;display: <?= $started ? "block" : "none" ?>">
-                <div class="w3-margin-bottom w3-half w3-center">
+            <div class="w3-row" style="margin-top:30px; display: <?= $started ? "block" : "none" ?>" id="cat_clue">
+                <div class="w3-col m4 w3-margin-bottom w3-center w3-padding-small">
                     <ul class="w3-ul w3-light-grey w3-center">
                         <li class="w3-dark-grey w3-large w3-padding-16">Category</li>
-                        <li class="w3-padding-16">
+                        <li class="w3-padding-16" style="min-height: 120px;">
                             <h3><span id="category" style="color: blue"><span></h3>
                         </li>
                     </ul>
                 </div>
 
-                <div class="w3-margin-bottom w3-half">
+                <div class="w3-col m8 w3-margin-bottom w3-padding-small">
                     <ul class="w3-ul w3-light-grey w3-center">
                         <li class="w3-dark-grey w3-large w3-padding-16">Clue</li>
-                        <li class="w3-padding-16">
+                        <li class="w3-padding-16" style="min-height: 120px;">
                             <h3><span id="clue" style="color: blue"> </span></h3>
                         </li>
                     </ul>
@@ -154,17 +175,17 @@
                     </div>
                     <form class="w3-container">
                         <p>
-                            <input class="w3-input" type="text" name="Name" required>
+                            <input class="w3-input" type="text" name="guess" id="guess" required readonly>
                         </p>
                     </form>
                     <div class="w3-container">
-                        <h2><span id="message" style="color: red"></span></h2>
+                        <h2><span id="message"></span></h2>
                     </div>
                     <div class="w3-container">
                         <button class="w3-button w3-grey w3-block w3-hover-black w3-margin-bottom" id="getClue"
-                            <?= $started ? "" : "disabled" ?>>Get Clue</button>
-                        <button type="submit" class="w3-button w3-green w3-block w3-margin-bottom" id="checkAnswer"
-                            <?= $started ? "" : "disabled" ?>>Submit Answer</button>
+                            <?= $started ? "disabled" : "disabled" ?>>Get Clue</button>
+                        <button class="w3-button w3-green w3-block w3-margin-bottom" id="checkAnswer"
+                            <?= $started ? "disabled" : "disabled" ?>>Submit Answer</button>
                     </div>
                 </div>
             </div>
@@ -174,9 +195,9 @@
                 <h3><b>Game Stats</b>:</h3>
                 <div class="w3-col m4 w3-margin-bottom">
                     <div class="w3-light-grey">
-                        <div class="w3-container">
-                            <h3>WINS</h3>
-                            <p class="w3-opacity"><span id="num_wins">
+                        <div class="w3-container w3-center">
+                            <h3 style="min-height: 70px">WINS</h3>
+                            <p class="w3-opacity w3-large w3-text-blue"><span id="num_wins">
                                     <?= $num_wins ?>
                                 </span></p>
                         </div>
@@ -184,9 +205,9 @@
                 </div>
                 <div class="w3-col m4 w3-margin-bottom">
                     <div class="w3-light-grey">
-                        <div class="w3-container">
-                            <h3>ROUNDS</h3>
-                            <p class="w3-opacity"><span id="num_games_played">
+                        <div class="w3-container w3-center">
+                            <h3 style="min-height: 70px">ROUNDS</h3>
+                            <p class="w3-opacity w3-large w3-text-blue"><span id="num_games_played">
                                     <?= $num_games_played ?>
                                 </span></p>
                         </div>
@@ -194,9 +215,9 @@
                 </div>
                 <div class="w3-col m4 w3-margin-bottom">
                     <div class="w3-light-grey">
-                        <div class="w3-container">
-                            <h3>ATTEMPTS THIS ROUND</h3>
-                            <p class="w3-opacity"><span id="num_attempts">
+                        <div class="w3-container w3-center">
+                            <h3 style="min-height: 70px">ATTEMPTS THIS ROUND</h3>
+                            <p class="w3-opacity w3-large w3-text-blue"><span id="num_attempts">
                                     <?= $num_attempts ?>
                                 </span></p>
                         </div>
@@ -207,11 +228,11 @@
             <!-- Next round and End Game -->
             <div class="w3-row-padding" style="margin-top:30px;display: <?= $started ? "block" : "none" ?>">
                 <div class="w3-half w3-margin-bottom">
-                    <button class="w3-button w3-block w3-blue w3-padding-large" id="reset" <?= $started ? "" : "disabled" ?>>Next Round</button>
+                    <button class="w3-button w3-block w3-blue w3-padding-large" id="reset" <?= $started ? "disabled" : "disabled" ?>>Next Round</button>
                 </div>
 
                 <div class="w3-half">
-                    <button class="w3-button w3-block w3-blue w3-padding-large" id="end" <?= $started ? "" : "disabled" ?> onclick="location.href='<?= base_url('api') ?>end_game'">End Game</button>
+                    <button class="w3-button w3-block w3-blue w3-padding-large" id="endGame" <?= $started ? "" : "disabled" ?>>End Game</button>
                 </div>
             </div>
         </div>
@@ -224,7 +245,7 @@
             <ul>
                 <li>Hannah Patricia Alcancia</li>
                 <li>Garry Balinon</li>
-                <li>Joseph Concepciona</li>
+                <li>Joseph Concepcion</li>
                 <li>Jon Paolo Panis</li>
                 <li>Aldwin Sumalinog</li>
                 <li>Jean Tonogbanua</li>
@@ -266,7 +287,8 @@
             $("#getCategory").click(function () {
 
                 var ajxCategory = $.ajax({
-                    url: '<?= base_url('api') ?>get_category',
+                    url: '<?= base_url('get_category') ?>',
+                    //url: '<?= base_url('api/get_category') ?>',
                     type: 'post',
                     //data: {search:search},
                     beforeSend: function () {
@@ -276,11 +298,11 @@
                         $("#content").hide();
                     },
                     success: function (data, status, jqXhr) {
-                        //console.log(data);
-                        $("#category").text(data.categoryTitle);
-                        $("#num_games_played").text(data.num_games_played);
-                        $("#num_attempts").text(data.num_attempts);
-                        $("#num_wins").text(data.num_wins);
+                        console.log(data);
+                        $("#category").html(data.categoryTitle);
+                        $("#num_games_played").html(data.num_games_played);
+                        $("#num_attempts").html(data.num_attempts);
+                        $("#num_wins").html(data.num_wins);
                         $("#reset").prop('disabled', false);
                         $("#getClue").prop('disabled', false);
                         $("#checkAnswer").prop('disabled', false);
@@ -288,27 +310,29 @@
                             $("#checkAnswer").prop('disabled', true);
                             $("#guess").prop('readonly', true);
                         } else {
-
-                            $("#getClue").prop('disabled', false);
                             $("#checkAnswer").prop('disabled', false);
+                            //$("#getClue").prop('disabled', false);
+                            $("#guess").prop('readonly', false);
                         }
                     }
                 }),
                     ajxWord = ajxCategory.then(function (data) {
                         return $.ajax({
-                            url: '<?= base_url('api') ?>initialize_word',
+                            //url: '<?= base_url('api/initialize_word') ?>',
+                            url: '<?= base_url('initialize_word') ?>',
                             type: 'post',
                             success: function (data, status, jqXhr) {
-                                //console.log(data);
+                                console.log(data);
                             }
                         });
                     }),
                     ajxClues = ajxWord.then(function (data) {
                         return $.ajax({
-                            url: '<?= base_url('api') ?>initialize_clues',
+                            //url: '<?= base_url('api/initialize_clues') ?>',
+                            url: '<?= base_url('initialize_clues') ?>',
                             type: 'post',
                             success: function (data, status, jqXhr) {
-                                //console.log(data);
+                                console.log(data);
                             }
                         });
 
@@ -318,12 +342,18 @@
                     //console.log(data);
                     $("#loader").hide();
                     $("#content").show();
+                    $('html, body').animate({
+                        scrollTop: $("#game").offset().top,
+                        },
+                        500
+                    );
                 });
             });
 
             $("#getClue").click(function () {
                 $.ajax({
-                    url: '<?= base_url('api') ?>get_clue',
+                    //url: '<?= base_url('api/get_clue') ?>',
+                    url: '<?= base_url('get_clue') ?>',
                     type: 'post',
                     beforeSend: function () {
                         // Show image container
@@ -331,11 +361,11 @@
                         $("#content").hide();
                     },
                     success: function (data, status) {
-                        //console.log(data);
-                        $("#clue").text(data.clue);
-                        $("#num_games_played").text(data.num_games_played);
-                        $("#num_attempts").text(data.num_attempts);
-                        $("#num_wins").text(data.num_wins);
+                        console.log(data);
+                        $("#clue").html(data.clue);
+                        $("#num_games_played").html(data.num_games_played);
+                        $("#num_attempts").html(data.num_attempts);
+                        $("#num_wins").html(data.num_wins);
                         $("#checkAnswer").prop('disabled', false);
                         $("#guess").prop('readonly', false);
                         if (data.next_round === true) {
@@ -344,58 +374,148 @@
                             $("#getClue").prop('disabled', true);
                         }
 
-                        $("#message").text("");
+                        $("#message").html("");
                     },
                     complete: function (data) {
                         // Hide image container
                         $("#loader").hide();
                         $("#content").show();
+                        $('html, body').animate({
+                            scrollTop: $("#cat_clue").offset().top,
+                            },
+                            500
+                        );
                     }
                 });
             });
 
             $("#checkAnswer").click(function () {
-                $("#checkAnswer").prop('disabled', true);
-                $("#guess").prop('readonly', true);
+
                 let guess = $("#guess").val();
                 console.log(guess);
                 if (guess != "") {
-                    $.post("<?= base_url() ?>check_answer",
-                        {
-                            answer: guess,
+                    
+                    $("#checkAnswer").prop('disabled', true);
+                    $("#guess").prop('readonly', true);
+                    
+                    $('html, body').animate({
+                        scrollTop: $("#cat_clue").offset().top,
                         },
-                        function (data, status) {
-                            //console.log(data);
-                            $("#message").text(data.message);
-                            $("#guess").val("");
-                            $("#num_games_played").text(data.num_games_played);
-                            $("#num_attempts").text(data.num_attempts);
-                            $("#num_wins").text(data.num_wins);
-                            if (data.next_round === true) {
-                                $("#getClue").prop('disabled', true);
-                            }
-                        });
+                        500
+                    );
+                    $.post("<?= base_url('check_answer') ?>",
+                    //$.post("<?= base_url('api/check_answer') ?>",
+                    {
+                        answer: guess,
+                    },
+                    function (data, status) {
+                        //console.log(data);
+                        $("#message").html(data.message);
+                        $("#guess").val("");
+                        $("#num_games_played").html(data.num_games_played);
+                        $("#num_attempts").html(data.num_attempts);
+                        $("#num_wins").html(data.num_wins);
+                        if (data.next_round === true) {
+                            $("#getClue").prop('disabled', true);
+                        }
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Oops...',
+                        text: 'Please type in your answer first.',
+                    })
                 }
             });
 
 
             $("#reset").click(function () {
-                $.post("<?= base_url('api') ?>reset",
+                Swal.fire({
+                    title: 'Another Round?',
+                    text: "This will end the current round",
+                    icon: 'warning',
+                    showDenyButton: true,
+                    //showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    denyButtonColor: '#d33',
+                    confirmButtonText: 'Yes',
+                    denyButtonText: `No`,
+                }).then((result) => {
+                /* Read more about isConfirmed, isDenied below */
+                    if (result.isConfirmed) {
+                        //$.post("<?= base_url('api/reset') ?>",
+                        $.post("<?= base_url('reset') ?>",
+                            function (data, status) {
+                                $("#clue").html("");
+                                $("#num_games_played").html(data.num_games_played);
+                                $("#num_attempts").html("0");
+                                $("#num_wins").html(data.num_wins);
+                                $("#mystery_word").html("");
+                                $("#category").html("");
+                                $("#getCategory").prop('disabled', false);
+                                $("#reset").prop('disabled', true);
+                                $("#revealWord").prop('disabled', true);
+                                $("#getClue").prop('disabled', true);
+                                $("#startGame").prop('disabled', true);
+                                $("#checkAnswer").prop('disabled', true);
+                                $("#message").html("");
+                            });
+                        
+                            $('html, body').animate({
+                                scrollTop: $("#game").offset().top,
+                                },
+                                500
+                        );
+                    }
+                    /* } else if (result.isDenied) {
+                        Swal.fire('Changes are not saved', '', 'info')
+                    } */
+                })
+
+                /* if(confirm("Next Round?")) {
+                //$.post("<?= base_url('api/reset') ?>",
+                $.post("<?= base_url('reset') ?>",
                     function (data, status) {
-                        $("#clue").text("");
-                        $("#num_games_played").text(data.num_games_played);
-                        $("#num_attempts").text("0");
-                        $("#num_wins").text(data.num_wins);
-                        $("#mystery_word").text("");
-                        $("#category").text("");
+                        $("#clue").html("");
+                        $("#num_games_played").html(data.num_games_played);
+                        $("#num_attempts").html("0");
+                        $("#num_wins").html(data.num_wins);
+                        $("#mystery_word").html("");
+                        $("#category").html("");
                         $("#getCategory").prop('disabled', false);
                         $("#reset").prop('disabled', true);
                         $("#revealWord").prop('disabled', true);
                         $("#getClue").prop('disabled', true);
                         $("#startGame").prop('disabled', true);
                         $("#checkAnswer").prop('disabled', true);
-                        $("#message").text("");
+                        $("#message").html("");
                     });
+                    
+                    $('html, body').animate({
+                        scrollTop: $("#game").offset().top,
+                        },
+                        500
+                    );
+                } */
+            });
+
+            $('#endGame').click(function(e) {
+                Swal.fire({
+                    title: 'End Game?',
+                    text: "Your stats will be reset.",
+                    icon: 'warning',
+                    //showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    denyButtonColor: '#3085d6',
+                    confirmButtonText: 'Yes, I quit.',
+                    showDenyButton: true,
+                    //showCancelButton: true,
+                    denyButtonText: `No`,
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        location.href='<?= base_url('end_game') ?>';
+                    }
+                })
             });
 
         });

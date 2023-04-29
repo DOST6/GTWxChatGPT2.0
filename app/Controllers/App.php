@@ -73,6 +73,48 @@ class App extends BaseController
         return view('app_view', $data);
     }
 
+    public function test() {
+
+        if($this->request->getMethod() == 'post') {
+
+            $post_data = $this->request->getPost();
+            if($post_data['name'] != "") {
+                $session_data = [
+                    'started' => TRUE,
+                    'player_name' => $post_data['name'],
+                    'category' => array(),
+                    'secret_word' => "",
+                    'clues' => array(),
+                    'guessed' => FALSE,
+                    'num_attempts' => 0,
+                    'num_games_played' => 0,
+                    'num_wins' => 0
+                ];
+                session()->set($session_data);
+            }
+        }
+
+        if(session()->get("started") == true) {
+            $data = $this->get_game_stats();
+            $data['player_name'] = session()->get("player_name");
+            $data['started'] = TRUE;
+        } else {
+            $data = [
+                'started' => FALSE,
+                'player_name' => "Player",
+                'category' => array(),
+                'secret_word' => "",
+                'clues' => array(),
+                'guessed' => FALSE,
+                'num_attempts' => 0,
+                'num_games_played' => 0,
+                'num_wins' => 0
+            ];
+        }
+        $data['next_round'] = false;
+        return view('app_view', $data);
+    }
+
     public function index() {
 
         if($this->request->getMethod() == 'post') {
@@ -235,13 +277,13 @@ class App extends BaseController
                         $num_wins = session()->get("num_wins");
                         session()->set(['num_wins'=>($num_wins+1) ]);
                         $data = $this->get_game_stats();
-                        $data['message'] = "You guessed it - ".session()->get("secret_word")."! Click Next Round or End Game.";
+                        $data['message'] = "<span class='w3-text-green'>You guessed it - <b>".session()->get("secret_word")."</b>!<br><span class='w3-medium w3-text-gray'>Click <b>Next Round</b> or <b>End Game</b>.</span></span>";
                         session()->set(['guessed'=>TRUE]);
                         $data['next_round'] = true;
                         return $this->response->setJSON($data);
                     } else {
                         $data['next_round'] = false;
-                        $data['message'] = "Sorry, wrong answer. Get another clue.";
+                        $data['message'] = "<span class='w3-text-red'>Sorry, wrong answer. Get another clue.</span>";
                         return $this->response->setJSON($data);
                     }
                 }
@@ -268,7 +310,7 @@ class App extends BaseController
                 $num_attempt = session()->get('num_attempts') == null? 0 : session()->get('num_attempts');
                 if($num_attempt >= count($clues_arr)) {
                     $data = $this->get_game_stats();
-                    $data['clue'] = "No more clues. You lose. The answer is: ".session()->get('secret_word').". Click Next Round or End Game. ";
+                    $data['clue'] = "<span class='w3-text-red'>No more clues. You lose.<br><span class='w3-text-green'>The answer is: <b>".session()->get('secret_word')."</b>.</span><br><span class='w3-medium w3-text-gray'>Click <b>Next Round</b> or <b>End Game</b>.</span></span>";
                     $data['next_round'] = true;
                     //$data['message'] = "Click Next Round or End Game";
                     return $this->response->setJSON($data);

@@ -42,8 +42,8 @@ $routes->post('reset', 'App::reset');
 $routes->post('check_answer', 'App::check_answer');
 $routes->get('end_game', 'App::end_game');
 //$routes->get('chat', 'App::test');
-//$routes->get('test', 'App::test');
-//$routes->post('test', 'App::test');
+$routes->get('test', 'App::test');
+$routes->post('test', 'App::test');
 
 
 $routes->get('api', 'Api::index');
