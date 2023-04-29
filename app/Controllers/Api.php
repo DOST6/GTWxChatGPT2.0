@@ -132,7 +132,11 @@ class Api extends BaseController
 
     public function get_clue()
     { //Joseph
-
+		$clues_arr = session()->get("clues");                //retrieve the clues array from the session data and get the number of clues in the array.
+		$num_clues = count($clues_arr);                      //count number of arrays
+		$clue_index = rand(0, $num_clues-1);                 //generate a random index within the bounds of the array
+		$clue = $clues_arr[$clue_index];                     //use this index to retrieve a single clue
+		return $this->response->setJSON(['clue' => $clue]); //return the clue to the user as a JSON response
     }
 
     public function check_answer()
