@@ -141,7 +141,27 @@ class Api extends BaseController
 
     public function check_answer()
     { //Pao
-
+        if($this->request->getMethod() == 'post') {
+            $post_data = $this->request->getPost();
+            if($post_data['answer'] != "") {
+                if(session()->get("guessed") === FALSE) {
+                    $secret_word = session()->get("secret_word");
+                    if(strcasecmp(trim($secret_word), trim($post_data['answer'])) == 0) {
+                        $num_wins = session()->get("num_wins");
+                        session()->set(['num_wins'=>($num_wins+1) ]);
+                        $data = $this->get_game_stats();
+                        $data['message'] = "You guessed it - ".session()->get("secret_word")."! Click Next Round or End Game.";
+                        session()->set(['guessed'=>TRUE]);
+                        $data['next_round'] = true;
+                        return $this->response->setJSON($data);
+                    } else {
+                        $data['next_round'] = false;
+                        $data['message'] = "Sorry, wrong answer. Get another clue.";
+                        return $this->response->setJSON($data);
+                    }
+                }
+            }
+        }
     }
 
     public function reset()
