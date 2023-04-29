@@ -204,7 +204,7 @@ class Api extends BaseController
 
     }
     
-    protected function request_clues($word) { //Hannah
+    protected function request_clues($word) { //Hannah-revision1
 
     }
 
