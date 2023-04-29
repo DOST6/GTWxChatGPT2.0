@@ -163,6 +163,16 @@ class Api extends BaseController
 
     protected function get_game_stats() { //Aldwin
 
+        $num_attempts = (session()->get('num_attempts') != null) ?session()->get('num_attempts'):0;
+        $num_games_played = (session()->get('num_games_played') != null) ?session()->get('num_games_played'):0;
+        $num_wins = (session()->get('num_wins') != null) ?session()->get('num_wins'):0;
+        
+        $data = [
+            'num_attempts' => $num_attempts,
+            'num_games_played' => $num_games_played,
+            'num_wins' => $num_wins
+        ];
+        return $data;
     }
 
     protected function request_word($category) { //Pao
