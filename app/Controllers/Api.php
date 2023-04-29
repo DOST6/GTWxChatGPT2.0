@@ -164,10 +164,23 @@ class Api extends BaseController
         }
     }
 
-    public function reset()
-    { //Hannah
-        //change
-
+    public function reset() {
+        if($this->request->getMethod() == 'post') {
+            $num_games_played = session()->get("num_games_played");
+            $data = [
+                //'started' => TRUE,
+                //'player_name' => $post_data['name'],
+                'category' => array(),
+                'secret_word' => "",
+                'clues' => array(),
+                'guessed' => FALSE,
+                'num_attempts' => 0,
+                //'num_games_played' => $num_games_played+1,
+                //'num_wins' => 0
+                'next_round' => false,
+            ];
+            session()->set($data);
+        }
     }
 
     public function end_game() { //Aldwin
@@ -204,8 +217,14 @@ class Api extends BaseController
 
     }
     
-    protected function request_clues($word) { //Hannah-revision1
-
+    protected function request_clues($word) {
+        $clues_arr = array();
+        if(strlen($word) > 1) {
+            $prompt = "Suggest 10 statements that will serve as clue for ".$word." without using the word ".$word.".";
+            $clues = trim($this->chatGPT($prompt)); //trim to remove extra line breaks
+            $clues_arr = explode("\n", $clues);
+        }
+        return $clues_arr;
     }
 
     private function chatGPT($prompt) { // Garry
