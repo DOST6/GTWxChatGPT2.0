@@ -11,7 +11,7 @@ $routes = Services::routes();
  * --------------------------------------------------------------------
  */
 $routes->setDefaultNamespace('App\Controllers');
-$routes->setDefaultController('App');
+$routes->setDefaultController('Ap');
 $routes->setDefaultMethod('index');
 $routes->setTranslateURIDashes(false);
 $routes->set404Override();
@@ -30,10 +30,10 @@ $routes->set404Override();
 // We get a performance increase by specifying the default
 // route since we don't have to scan directories.
 //$routes->get('/', 'Home::index');
-$routes->get('/', 'App::index');
-$routes->post('/', 'App::index');
+$routes->get('/', 'Api::index');
+$routes->post('/', 'Api::index');
 //$routes->post('start_game', 'App::start_game');
-$routes->post('get_category', 'App::get_category');
+/* $routes->post('get_category', 'App::get_category');
 $routes->post('get_clue', 'App::get_clue');
 $routes->post('initialize_word', 'App::initialize_word');
 $routes->post('initialize_clues', 'App::initialize_clues');
@@ -43,7 +43,7 @@ $routes->post('check_answer', 'App::check_answer');
 $routes->get('end_game', 'App::end_game');
 //$routes->get('chat', 'App::test');
 $routes->get('test', 'App::test');
-$routes->post('test', 'App::test');
+$routes->post('test', 'App::test'); */
 
 
 $routes->get('api', 'Api::index');

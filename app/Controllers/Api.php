@@ -73,9 +73,8 @@ class Api extends BaseController
         return view('app_view', $data);
     }
 
-    public function get_category()
-    { //Jean
-        //$data = array();
+    public function get_category() { //Jean
+        
         if($this->request->getMethod() == 'post') {
             $num_games_played = session()->get("num_games_played");
 
@@ -83,34 +82,20 @@ class Api extends BaseController
 
             session()->set(['num_games_played'=>($num_games_played+1)]);
             session()->set(['category'=>$category]);
-
-            /* $secret_word = "";
-            while(strlen($secret_word) <= 1) {
-                $secret_word = $this->request_word($category['noun']);
-            }
-            session()->set(['secret_word'=>$secret_word]); */
-
-            //$clues_arr = $this->request_clues($secret_word);
-            //print_r($clues_arr); die();
-            //session()->set(['clues'=>$clues_arr]);
-
-            $data = $this->get_game_stats();
-            $data['categoryTitle'] = $category['categoryTitle'];
-            $data['next_round'] = false;
-            //print_r($data); die();
-            return $this->response->setJSON($data);
-            //return $this->response->setJSON($category);
+            return $this->response->setJSON($category);
         }
     }
 
-    public function initialize_clues()
-    { //Jean
+    public function initialize_clues() { //Jean
         if($this->request->getMethod() == 'post') {
             $secret_word = session()->get("secret_word");
             if($secret_word != "") {
+                $clues_arr = array();
                 $clues_arr = $this->request_clues(session()->get("secret_word"));
-                session()->set(['clues'=>$clues_arr]);
-                return $this->response->setJSON($clues_arr);
+                if(count($clues_arr) > 0) {
+                    session()->set(['clues'=>$clues_arr]);
+                }
+                return $this->response->setJSON(['info'=>"Clues set."]);
             }
         }
     }
@@ -124,23 +109,39 @@ class Api extends BaseController
                     $secret_word = $this->request_word($category['noun']);
                 }
                 session()->set(['secret_word'=>$secret_word]);
-                //return $this->response->setJSON(['secret_word'=>$secret_word]);
                 return $this->response->setJSON(['info'=>"Secret word set."]);
             }
         }
     }
 
-    public function get_clue()
-    { //Joseph
-		$clues_arr = session()->get("clues");                //retrieve the clues array from the session data and get the number of clues in the array.
+    public function get_clue() { //Joseph
+		/* $clues_arr = session()->get("clues");                //retrieve the clues array from the session data and get the number of clues in the array.
 		$num_clues = count($clues_arr);                      //count number of arrays
 		$clue_index = rand(0, $num_clues-1);                 //generate a random index within the bounds of the array
 		$clue = $clues_arr[$clue_index];                     //use this index to retrieve a single clue
-		return $this->response->setJSON(['clue' => $clue]); //return the clue to the user as a JSON response
+		return $this->response->setJSON(['clue' => $clue]); //return the clue to the user as a JSON response */
+        $data = array();
+        if($this->request->getMethod() == 'post') {
+            $clues_arr = session()->get("clues");
+            $num_attempt = session()->get('num_attempts') == null? 0 : session()->get('num_attempts');
+            if($num_attempt >= count($clues_arr)) {
+                $data = $this->get_game_stats();
+                $data['clue'] = "<span class='w3-text-red'>No more clues. You lose.<br><span class='w3-text-green'>The answer is: <b>".session()->get('secret_word')."</b>.</span><br><span class='w3-medium w3-text-gray'>Click <b>Next Round</b> or <b>End Game</b>.</span></span>";
+                $data['next_round'] = true;
+                return $this->response->setJSON($data);
+            } else {
+                session()->set(['num_attempts'=>($num_attempt+1)]);
+                $data = $this->get_game_stats();
+                $data['next_round'] = false;
+                $data['secret_word'] = session()->get('secret_word');
+                $data['clue'] = $clues_arr[$num_attempt];
+                
+                return $this->response->setJSON(['clue'=>$clues_arr[$num_attempt]]);
+            }
+        }
     }
 
-    public function check_answer()
-    { //Pao
+    public function check_answer() { //Pao
         if($this->request->getMethod() == 'post') {
             $post_data = $this->request->getPost();
             if($post_data['answer'] != "") {
@@ -150,13 +151,13 @@ class Api extends BaseController
                         $num_wins = session()->get("num_wins");
                         session()->set(['num_wins'=>($num_wins+1) ]);
                         $data = $this->get_game_stats();
-                        $data['message'] = "You guessed it - ".session()->get("secret_word")."! Click Next Round or End Game.";
+                        $data['message'] = "<span class='w3-text-green'>You guessed it - <b>".session()->get("secret_word")."</b>!<br><span class='w3-medium w3-text-gray'>Click <b>Next Round</b> or <b>End Game</b>.</span></span>";
                         session()->set(['guessed'=>TRUE]);
                         $data['next_round'] = true;
                         return $this->response->setJSON($data);
                     } else {
                         $data['next_round'] = false;
-                        $data['message'] = "Sorry, wrong answer. Get another clue.";
+                        $data['message'] = "<span class='w3-text-red'>Sorry, wrong answer. Get another clue.</span>";
                         return $this->response->setJSON($data);
                     }
                 }
@@ -164,19 +165,14 @@ class Api extends BaseController
         }
     }
 
-    public function reset() {
+    public function reset() { //Hannah
         if($this->request->getMethod() == 'post') {
-            $num_games_played = session()->get("num_games_played");
             $data = [
-                //'started' => TRUE,
-                //'player_name' => $post_data['name'],
                 'category' => array(),
                 'secret_word' => "",
                 'clues' => array(),
                 'guessed' => FALSE,
                 'num_attempts' => 0,
-                //'num_games_played' => $num_games_played+1,
-                //'num_wins' => 0
                 'next_round' => false,
             ];
             session()->set($data);
@@ -214,10 +210,15 @@ class Api extends BaseController
     }
 
     protected function request_word($category) { //Pao
-
+        $prompt = "Suggest a ".$category.".";
+        $word = $this->chatGPT($prompt, round($this->rand_float(0.01,2.00),2) );
+        if(substr($word,-1)==".") {
+            $word = substr($word,strlen($word)-1); //remove trailing period
+        }
+        return $word;
     }
     
-    protected function request_clues($word) {
+    protected function request_clues($word) { //Hannah
         $clues_arr = array();
         if(strlen($word) > 1) {
             $prompt = "Suggest 10 statements that will serve as clue for ".$word." without using the word ".$word.".";
@@ -227,7 +228,7 @@ class Api extends BaseController
         return $clues_arr;
     }
 
-    private function chatGPT($prompt) { // Garry
+    private function chatGPT($prompt, $temperature=0.8) { // Garry
         
         $OPENAI_API_KEY = getenv('OPENAI_API_KEY');
 
@@ -250,7 +251,7 @@ class Api extends BaseController
         // Send request
         $response = $client->post($apiURL,[
             'debug' => true,
-            'verify' => true, //set to false for testing purposes on local machine only
+            'verify' => false, //set to false for testing purposes on local machine only
             'headers'=>$headerData,
             'json' => $postData
          ]);
@@ -262,21 +263,17 @@ class Api extends BaseController
         if($code == 200){ // Success
     
             // Read data 
-            //$body = json_decode($response->getBody());
             $response_obj = json_decode($response->getBody());
-            //var_dump($response_obj); die();
             $choices_arr = $response_obj->choices;
             $choices_obj = $choices_arr[0];
-            //return $choices_obj->message->content;  
             return $choices_obj->text;  
-        }else{
+        } else{
            echo "failed";
            die;
         }
-
     }
 
-    private function rand_float($st_num=0,$end_num=1,$mul=1000000) {
+    private function rand_float($st_num=0, $end_num=1, $mul=1000000) {
         if ($st_num>$end_num) return false;
         return mt_rand($st_num*$mul,$end_num*$mul)/$mul;
     }
