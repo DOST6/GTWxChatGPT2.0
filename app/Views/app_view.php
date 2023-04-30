@@ -183,7 +183,7 @@
                         <h2><span id="message"></span></h2>
                     </div>
                     <div class="w3-container">
-                        <button class="w3-button w3-grey w3-block w3-hover-black w3-margin-bottom" id="getClue"
+                        <button class="w3-button w3-blue w3-block w3-hover-black w3-margin-bottom" id="getClue"
                             <?= $started ? "disabled" : "disabled" ?>>Get Clue</button>
                         <button class="w3-button w3-green w3-block w3-margin-bottom" id="checkAnswer"
                             <?= $started ? "disabled" : "disabled" ?>>Submit Answer</button>
@@ -341,6 +341,11 @@
                         500
                     );
                 });
+            });
+
+            $("#guess").keypress(function (e) {
+                if(e.key == "Enter")
+                    e.preventDefault();
             });
 
             $("#getClue").click(function () {
