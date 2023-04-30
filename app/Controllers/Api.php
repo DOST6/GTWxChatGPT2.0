@@ -251,7 +251,7 @@ class Api extends BaseController
         // Send request
         $response = $client->post($apiURL,[
             'debug' => true,
-            'verify' => false, //set to false for testing purposes on local machine only
+            'verify' => true, //set to false for testing purposes on local machine only
             'headers'=>$headerData,
             'json' => $postData
          ]);
