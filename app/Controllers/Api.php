@@ -31,8 +31,9 @@ class Api extends BaseController
         ['categoryTitle'=>"Fictional Characters", 'noun'=>"fictional character"]
     ];
 
-    public function index()
-    { //Garry
+    public function index() { //Garry
+
+        $data=array();
 
         if($this->request->getMethod() == 'post') {
             $post_data = $this->request->getPost();
@@ -52,10 +53,14 @@ class Api extends BaseController
             }
         }
 
-        if(session()->get("started") == true) {
+        if(session()->get("started") === true) {
             $data = $this->get_game_stats();
             $data['player_name'] = session()->get("player_name");
+            //$data['num_games_played'] = session()->get("num_games_played");
+            $data['num_attempts'] = 0;
+            //$data['num_wins'] = session()->get("num_wins");
             $data['started'] = TRUE;
+            //print_r($data); die();
         } else {
             $data = [
                 'started' => FALSE,
@@ -70,7 +75,7 @@ class Api extends BaseController
             ];
         }
         $data['next_round'] = false;
-        return view('app_view', $data);
+        return view('game_view', $data);
     }
 
     public function get_category() { //Jean
@@ -81,8 +86,14 @@ class Api extends BaseController
             $category = $this->categories[rand(0,19)];
 
             session()->set(['num_games_played'=>($num_games_played+1)]);
+            session()->set(['num_attempts'=>0]);
             session()->set(['category'=>$category]);
-            return $this->response->setJSON($category);
+            
+            $data = $this->get_game_stats();
+            $data['categoryTitle'] = $category['categoryTitle'];
+            $data['next_round'] = false;
+            //return $this->response->setJSON($category);
+            return $this->response->setJSON($data);
         }
     }
 
@@ -123,10 +134,10 @@ class Api extends BaseController
         $data = array();
         if($this->request->getMethod() == 'post') {
             $clues_arr = session()->get("clues");
-            $num_attempt = session()->get('num_attempts') == null? 0 : session()->get('num_attempts');
+            $num_attempt = session()->get('num_attempts') == 0 ? 0 : session()->get('num_attempts');
             if($num_attempt >= count($clues_arr)) {
                 $data = $this->get_game_stats();
-                $data['clue'] = "<span class='w3-text-red'>No more clues. You lose.<br><span class='w3-text-green'>The answer is: <b>".session()->get('secret_word')."</b>.</span><br><span class='w3-medium w3-text-gray'>Click <b>Next Round</b> or <b>End Game</b>.</span></span>";
+                $data['clue'] = "<span class='w3-text-red'>No more clues. You lose.</span><br>The answer is: <span class='w3-text-orange'><b>".session()->get('secret_word')."</b>.</span><br><span class='w3-medium w3-text-white'>Click <b>Next Round</b> or <b>End Game</b>.</span></span>";
                 $data['next_round'] = true;
                 return $this->response->setJSON($data);
             } else {
@@ -135,8 +146,9 @@ class Api extends BaseController
                 $data['next_round'] = false;
                 $data['secret_word'] = session()->get('secret_word');
                 $data['clue'] = $clues_arr[$num_attempt];
+                return $this->response->setJSON($data);
                 
-                return $this->response->setJSON(['clue'=>$clues_arr[$num_attempt]]);
+                //return $this->response->setJSON(['clue'=>$clues_arr[$num_attempt]]);
             }
         }
     }
@@ -151,12 +163,14 @@ class Api extends BaseController
                         $num_wins = session()->get("num_wins");
                         session()->set(['num_wins'=>($num_wins+1) ]);
                         $data = $this->get_game_stats();
+                        $data['icon'] = "success";
                         $data['message'] = "<span class='w3-text-green'>You guessed it - <b>".session()->get("secret_word")."</b>!<br><span class='w3-medium w3-text-gray'>Click <b>Next Round</b> or <b>End Game</b>.</span></span>";
                         session()->set(['guessed'=>TRUE]);
                         $data['next_round'] = true;
                         return $this->response->setJSON($data);
                     } else {
                         $data['next_round'] = false;
+                        $data['icon'] = "error";
                         $data['message'] = "<span class='w3-text-red'>Sorry, wrong answer. Get another clue.</span>";
                         return $this->response->setJSON($data);
                     }
@@ -196,10 +210,16 @@ class Api extends BaseController
     }
 
     protected function get_game_stats() { //Aldwin
-
-        $num_attempts = (session()->get('num_attempts') != null) ?session()->get('num_attempts'):0;
-        $num_games_played = (session()->get('num_games_played') != null) ?session()->get('num_games_played'):0;
-        $num_wins = (session()->get('num_wins') != null) ?session()->get('num_wins'):0;
+        $data = [
+            'num_attempts' => session()->get('num_attempts'),
+            'num_games_played' => session()->get('num_games_played'),
+            'num_wins' => session()->get('num_wins'),
+            'started' => session()->get('started'),
+        ];
+        //print_r($data); die();
+        $num_attempts = (session()->get('num_attempts') != 0) ?session()->get('num_attempts'):0;
+        $num_games_played = (session()->get('num_games_played') != 0) ?session()->get('num_games_played'):0;
+        $num_wins = (session()->get('num_wins') != 0) ?session()->get('num_wins'):0;
         
         $data = [
             'num_attempts' => $num_attempts,
@@ -210,7 +230,8 @@ class Api extends BaseController
     }
 
     protected function request_word($category) { //Pao
-        $prompt = "Suggest a ".$category.".";
+        //$prompt = "Suggest a ".$category.".";
+        $prompt = "Suggest a ".$category.", no punctuations, no numbers.";
         $word = $this->chatGPT($prompt, round($this->rand_float(0.01,2.00),2) );
         if(substr($word,-1)==".") {
             $word = substr($word,strlen($word)-1); //remove trailing period
@@ -251,7 +272,7 @@ class Api extends BaseController
         // Send request
         $response = $client->post($apiURL,[
             'debug' => true,
-            'verify' => true, //set to false for testing purposes on local machine only
+            'verify' => false, //set to false for testing purposes on local machine only
             'headers'=>$headerData,
             'json' => $postData
          ]);
