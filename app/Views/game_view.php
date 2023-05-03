@@ -535,6 +535,7 @@
                         $("#content").hide();
                     },
                     success: function (data, status) {
+                        console.log(data);
                         $("#leaderboard_list").html(data);
                         $('#leaderboard_modal').show();
                     },
