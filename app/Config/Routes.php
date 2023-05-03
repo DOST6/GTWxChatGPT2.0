@@ -48,6 +48,7 @@ $routes->post('test', 'App::test'); */
 
 $routes->get('api', 'Api::index');
 $routes->post('api', 'Api::index');
+$routes->post('api/start_game', 'Api::start_game');
 $routes->post('api/get_category', 'Api::get_category');
 $routes->post('api/get_clue', 'Api::get_clue');
 $routes->post('api/initialize_word', 'Api::initialize_word');
