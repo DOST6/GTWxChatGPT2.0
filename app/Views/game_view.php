@@ -206,10 +206,6 @@
 
                 <h3>Top Players</h3>
                 <ol class="w3-panel w3-large" id="leaderboard_list">
-                    <li><span class="w3-text-white">Garry </span><span class="w3-badge w3-blue">2.9</span></li>
-                    <li><span class="w3-text-white">asfbsx </span><span class="w3-badge w3-blue">2.1</span></li>
-                    <li><span class="w3-text-white">hbdr aegsf </span><span class="w3-badge w3-blue">1.9</span></li>
-                    <li><span class="w3-text-white">sef </span><span class="w3-badge w3-blue">0.8</span></li>
                 </ol>
             </div>
         </div>
@@ -290,7 +286,7 @@
 
     <!-- End page content -->
     </div>
-    <div class="w3-panel"></div>
+    <div class="w3-panel">XX: <?= getenv('curl_verify_ssl') ?></div>
     </div>
 
 
@@ -536,7 +532,11 @@
                     },
                     success: function (data, status) {
                         console.log(data);
-                        $("#leaderboard_list").html(data);
+                        for (const key in data) {
+                            //console.log(`${key} : ${data[key]}`);
+                            $("#leaderboard_list").append(`<li><span class="w3-text-white">${key} </span><span class="w3-badge w3-blue">${data[key]}</span></li>`);
+                        }
+                        //$("#leaderboard_list").html(data);
                         $('#leaderboard_modal').show();
                     },
                     complete: function (data) {

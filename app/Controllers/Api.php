@@ -1,12 +1,16 @@
 <?php
 
 namespace App\Controllers;
+//use CodeIgniter\API\ResponseTrait;
 
 class Api extends BaseController
 {
     /* protected $word_category = array();
     protected $secret_word;
     protected $word_clues = array(); */
+    
+                
+    //use ResponseTrait;
 
     protected $categories = [
         ['categoryTitle'=>"Animals", 'noun'=>"animal"],
@@ -264,13 +268,14 @@ class Api extends BaseController
             $data = file_get_contents($path); //data read from json file
             if($data != "")
             {
-                $player_scores = json_decode($data, true);  //decode data to associative array
+                /* $player_scores = json_decode($data, true);  //decode data to associative array
                 //return $this->response->setJSON($data);
                 $response = "";
                 foreach($player_scores as $player => $score) {
                     $response .= '<li><span class="w3-text-white">'.$player.' </span><span class="w3-badge w3-blue">'.$score.'</span></li>';
-                }
-                return $this->response->setXML($response);
+                } */
+                //return $this->respond($response);
+                return $this->response->setJSON($data);
             }
         }
 
@@ -342,7 +347,7 @@ class Api extends BaseController
         // Send request
         $response = $client->post($apiURL,[
             'debug' => true,
-            'verify' => false, //set to false for testing purposes on local machine only
+            'verify' => getenv('curl_verify_ssl')==0?false:true, //set to false for testing purposes on local machine only
             'headers'=>$headerData,
             'json' => $postData
          ]);
