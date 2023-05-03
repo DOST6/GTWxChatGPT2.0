@@ -101,7 +101,7 @@
                     <h1 class="w3-xxlarge w3-text-blue"><b>Guess the word</b></h1>
                     <h1 class="w3-xlarge w3-text-red"><b>with ChatGPT.</b></h1>
                     <!-- <hr style="width:100px;border:5px solid red" class="w3-round"> -->
-                    <h3 class="w3-panel w3-text-white" style="display: <?= $started?"block":"none" ?>">Let's Play <span class="w3-xlarge" id="player"><?= $player_name ?>!</span></h3>
+                    <h3 class="w3-panel w3-text-white" id="welcome" style="display: <?= $started?"block":"none" ?>">Let's Play <span class="w3-xlarge" id="player"><?= $player_name ?>!</span></h3>
                 </div>
                 <div class="w3-col l8 w3-padding">
                     <!-- Stats -->
@@ -329,6 +329,7 @@
                         success: function (data, status) {
                             console.log(data);
                             $("#player").html(data.player_name);
+                            $("#welcome").show();
                             $("#game").show();
                             $("#game_stats").show();
                             $("#game_intro").hide();                        

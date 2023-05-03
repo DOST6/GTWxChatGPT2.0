@@ -60,6 +60,7 @@ class Api extends BaseController
                 'round_start' => false,
                 'next_round' => false
             ];
+            session()->set($data);
         }
         //$data['next_round'] = session()->get("next_round");
         return view('game_view', $data);
