@@ -4,9 +4,9 @@ namespace App\Controllers;
 
 class Api extends BaseController
 {
-    protected $word_category = array();
+    /* protected $word_category = array();
     protected $secret_word;
-    protected $word_clues = array();
+    protected $word_clues = array(); */
 
     protected $categories = [
         ['categoryTitle'=>"Animals", 'noun'=>"animal"],
@@ -47,13 +47,14 @@ class Api extends BaseController
                     'guessed' => FALSE,
                     'num_attempts' => 0,
                     'num_games_played' => 0,
-                    'num_wins' => 0
+                    'num_wins' => 0,
+                    'score' => 0
                 ];
                 session()->set($session_data);
             }
         }
 
-        if(session()->get("started") === true) {
+        if(session()->get("started") == true) {
             $data = $this->get_game_stats();
             $data['player_name'] = session()->get("player_name");
             //$data['num_games_played'] = session()->get("num_games_played");
@@ -71,7 +72,8 @@ class Api extends BaseController
                 'guessed' => FALSE,
                 'num_attempts' => 0,
                 'num_games_played' => 0,
-                'num_wins' => 0
+                'num_wins' => 0,
+                'score' => 0
             ];
         }
         $data['next_round'] = false;
@@ -161,6 +163,9 @@ class Api extends BaseController
                     $secret_word = session()->get("secret_word");
                     if(strcasecmp(trim($secret_word), trim($post_data['answer'])) == 0) {
                         $num_wins = session()->get("num_wins");
+                        $prev_score = session()->get("score");
+                        $curr_score = number_format($prev_score + (1.1 - (session()->get('num_attempts')*0.1)), 2);
+                        session()->set(['score'=>$curr_score]);
                         session()->set(['num_wins'=>($num_wins+1) ]);
                         $data = $this->get_game_stats();
                         $data['icon'] = "success";
@@ -194,19 +199,81 @@ class Api extends BaseController
     }
 
     public function end_game() { //Aldwin
-        $session_data = [
-            'started' => FALSE,
-            'player_name' => "Player",
-            'category' => array(),
-            'secret_word' => "",
-            'clues' => array(),
-            'guessed' => FALSE,
-            'num_attempts' => 0,
-            'num_games_played' => 0,
-            'num_wins' => 0
-        ];
-        session()->set($session_data);
+        if(session()->get("started") == true)
+        {
+            $name = session()->get('player_name');
+            $score = session()->get('score');
+            $player_scores = array();
+            $path = 'player_scores.json';
+            if($score > 0)
+            {
+                if(file_exists($path))
+                {
+                    $data = file_get_contents($path); //data read from json file
+                    //print_r($data);
+                    if($data != "")
+                    {
+                        $player_scores = json_decode($data, true);  //decode data to associative array
+                        //print_r($player_scores);
+                        if (array_key_exists($name,$player_scores))
+                        {
+                            if($score > $player_scores[$name])
+                            {
+                                $player_scores[$name]=$score;
+                            }
+                        } else {
+                            $player_scores[$name]=$score;
+                        }
+                        arsort($player_scores);
+                    } else {
+                        $player_scores[$name]=$score;
+                    }
+
+                    //print_r($player_scores);
+
+                    // Convert JSON data from an array to a string
+                    $jsonString = json_encode($player_scores, JSON_PRETTY_PRINT);
+                    // Write in the file
+                    $fp = fopen($path, 'w');
+                    fwrite($fp, $jsonString);
+                    fclose($fp);
+                }
+            }
+
+            $session_data = [
+                'started' => FALSE,
+                'player_name' => "Player",
+                'category' => array(),
+                'secret_word' => "",
+                'clues' => array(),
+                'guessed' => FALSE,
+                'num_attempts' => 0,
+                'num_games_played' => 0,
+                'num_wins' => 0,
+                'score' => 0
+            ];
+            session()->set($session_data);
+        }
         return redirect()->to("/");
+    }
+
+    public function leaderboard() {
+        if($this->request->getMethod() == 'post')
+        {
+            $path = 'player_scores.json';
+            $data = file_get_contents($path); //data read from json file
+            if($data != "")
+            {
+                $player_scores = json_decode($data, true);  //decode data to associative array
+                //return $this->response->setJSON($data);
+                $response = "";
+                foreach($player_scores as $player => $score) {
+                    $response .= '<li><span class="w3-text-white">'.$player.' </span><span class="w3-badge w3-blue">'.$score.'</span></li>';
+                }
+                return $this->response->setXML($response);
+            }
+        }
+
     }
 
     protected function get_game_stats() { //Aldwin
@@ -215,17 +282,20 @@ class Api extends BaseController
             'num_games_played' => session()->get('num_games_played'),
             'num_wins' => session()->get('num_wins'),
             'started' => session()->get('started'),
+            'score' => session()->get('score'),
         ];
         //print_r($data); die();
-        $num_attempts = (session()->get('num_attempts') != 0) ?session()->get('num_attempts'):0;
+        /* $num_attempts = (session()->get('num_attempts') != 0) ?session()->get('num_attempts'):0;
         $num_games_played = (session()->get('num_games_played') != 0) ?session()->get('num_games_played'):0;
         $num_wins = (session()->get('num_wins') != 0) ?session()->get('num_wins'):0;
+        $score = (session()->get('score') != 0) ?session()->get('score'):0;
         
         $data = [
             'num_attempts' => $num_attempts,
             'num_games_played' => $num_games_played,
-            'num_wins' => $num_wins
-        ];
+            'num_wins' => $num_wins,
+            'score' => $score
+        ]; */
         return $data;
     }
 

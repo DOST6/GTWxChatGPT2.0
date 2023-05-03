@@ -54,6 +54,7 @@ $routes->post('api/initialize_word', 'Api::initialize_word');
 $routes->post('api/initialize_clues', 'Api::initialize_clues');
 $routes->post('api/reset', 'Api::reset');
 $routes->post('api/check_answer', 'Api::check_answer');
+$routes->post('api/leaderboard', 'Api::leaderboard');
 $routes->get('api/end_game', 'Api::end_game');
 
 /*

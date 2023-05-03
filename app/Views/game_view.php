@@ -77,7 +77,7 @@
             <a href="#" onclick="w3_close()" class="w3-bar-item w3-button w3-hover-white">Home</a>
             <a href="#instructions" onclick="w3_close(); document.getElementById('instructions_modal').style.display='block'; " class="w3-bar-item w3-button w3-hover-white">Instructions</a>
             <a href="#game" onclick="w3_close()" class="w3-bar-item w3-button w3-hover-white">Game</a>
-            <a href="#leaderboard" onclick="w3_close()" class="w3-bar-item w3-button w3-hover-white">Leaderboard</a>
+            <a href="#leaderboard" id="leaderboard" class="w3-bar-item w3-button w3-hover-white">Leaderboard</a>
             <!-- <a href="#contact" onclick="w3_close()" class="w3-bar-item w3-button w3-hover-white">Group Members</a> -->
         </div>
     </nav>
@@ -100,13 +100,13 @@
     <div class="w3-container" id="main">
 
         <!-- Header -->
-        <div class="w3-container w3-row" style="margin-top:0px">
+        <div class="w3-container w3-row bg-opacity" style="margin-top:0px">
             <div class="w3-col l1 w3-padding"></div>
             <div class="w3-col l3 w3-padding">
                 <h1 class="w3-xxlarge"><b>Guess the word</b></h1>
                 <h1 class="w3-xlarge w3-text-red"><b>with ChatGPT.</b></h1>
                 <!-- <hr style="width:100px;border:5px solid red" class="w3-round"> -->
-                <h2 class="w3-panel" style="display: <?= $started?"block":"none" ?>">Let's Play <span class="w3-text-red"><?= $player_name ?></span>!</h2>
+                <h2 class="w3-panel" style="display: <?= $started?"block":"none" ?>">Let's Play <span class="w3-text-white"><?= $player_name ?>!</span></h2>
             </div>
             <div class="w3-col l8 w3-padding">
                 <!-- Stats -->
@@ -127,7 +127,7 @@
                         </div>
                         <div class="w3-col m3 s6">
                             <div class="w3-container w3-center">
-                                <span id="score" class="w3-badge w3-green w3-xlarge w3-padding"><?= "999" ?></span>
+                                <span id="score" class="w3-badge w3-green w3-xlarge w3-padding"><?= $score ?></span>
                                 <h4>SCORE</h4>
                             </div>
                         </div>
@@ -143,7 +143,7 @@
         </div>
 
         <!-- Instructions-->
-        <div class="w3-row-padding" style="display: <?= $started?"none":"block" ?>">
+        <div class="w3-row-padding w3-margin-top" style="display: <?= $started?"none":"block" ?>">
         
             
             <div class="w3-col m1 w3-padding"></div>
@@ -196,9 +196,26 @@
                 </ul>
             </div>
         </div>
+        
+        <!-- Leaderboard Modal-->
+        <div id="leaderboard_modal" class="w3-modal">
+            <div class="w3-modal-content w3-container w3-padding-large w3-padding-24 w3-card-4 w3-round-large bg-theme" id="instructions">
+                <span onclick="document.getElementById('leaderboard_modal').style.display='none'" class="w3-button w3-display-topright w3-xxlarge w3-hover-none w3-round-large">&times;</span>
+                <h1 class="w3-xlarge w3-text-red"><b>Leaderboard.</b></h1>
+                <hr style="width:100px;border:3px solid red" class="w3-round">
+
+                <h3>Top Players</h3>
+                <ol class="w3-panel w3-large" id="leaderboard_list">
+                    <li><span class="w3-text-white">Garry </span><span class="w3-badge w3-blue">2.9</span></li>
+                    <li><span class="w3-text-white">asfbsx </span><span class="w3-badge w3-blue">2.1</span></li>
+                    <li><span class="w3-text-white">hbdr aegsf </span><span class="w3-badge w3-blue">1.9</span></li>
+                    <li><span class="w3-text-white">sef </span><span class="w3-badge w3-blue">0.8</span></li>
+                </ol>
+            </div>
+        </div>
 
         <!-- Game Play -->
-        <div class="w3-container" id="game" style="display: <?= $started?"block":"none" ?>">
+        <div class="w3-container w3-margin-top" id="game" style="display: <?= $started?"block":"none" ?>">
                     
             <!-- <h1 class="w3-xlarge w3-text-red"><b>Game.</b></h1>
             <hr style="width:100px;border:5px solid red" class="w3-round"> -->
@@ -206,7 +223,7 @@
             <div class="w3-row" style="display: <?= $started ? "block" : "none" ?>" id="start_round">
                 <div class="w3-col l1 w3-padding"></div>
                 <div class="w3-col l10 w3-padding w3-center">
-                    <button href="#game" class="w3-button w3-hover-none" id="getCategory" <?= $started ? "" : "disabled" ?>><img class="w3-image" src="start.png"></button>
+                    <button href="#game" class="w3-button w3-hover-none" id="getCategory" <?= $started ? "" : "disabled" ?>><img class="w3-image" src="start-round.png" width="400px"></button>
                 </div>
                 <div class="w3-col l1 w3-padding"></div>
             </div>
@@ -317,6 +334,7 @@
                         $("#num_games_played").html(data.num_games_played);
                         $("#num_attempts").html(data.num_attempts);
                         $("#num_wins").html(data.num_wins);
+                        $("#score").html(data.score);
                         $("#reset").prop('disabled', false);
                         $("#getClue").prop('disabled', false);
                         $("#guessWord").prop('disabled', false);
@@ -388,6 +406,7 @@
                         $("#num_games_played").html(data.num_games_played);
                         $("#num_attempts").html(data.num_attempts);
                         $("#num_wins").html(data.num_wins);
+                        $("#score").html(data.score);
                         $("#checkAnswer").prop('disabled', false);
                         $("#guess").prop('readonly', false);
                         if (data.next_round === true) {
@@ -440,6 +459,7 @@
                         $("#num_games_played").html(data.num_games_played);
                         $("#num_attempts").html(data.num_attempts);
                         $("#num_wins").html(data.num_wins);
+                        $("#score").html(data.score);
                         if (data.next_round === true) {
                             $("#getClue").prop('disabled', true);
                             $("#guessWord").prop('disabled', true);
@@ -480,6 +500,7 @@
                                 $("#num_games_played").html(data.num_games_played);
                                 $("#num_attempts").html("0");
                                 $("#num_wins").html(data.num_wins);
+                                $("#score").html(data.score);
                                 $("#mystery_word").html("");
                                 $("#category").html("");
                                 $("#getCategory").prop('disabled', false);
@@ -502,6 +523,30 @@
                     }
                 })
             });
+
+            $('#leaderboard').click(function(e) {
+                $.ajax({
+                    url: '<?= base_url('api/leaderboard') ?>',
+                    type: 'post',
+                    beforeSend: function () {
+                        // Show image container
+                        w3_close();
+                        $("#loader").show();
+                        $("#content").hide();
+                    },
+                    success: function (data, status) {
+                        $("#leaderboard_list").html(data);
+                        $('#leaderboard_modal').show();
+                    },
+                    complete: function (data) {
+                        // Hide image container
+                        $("#loader").hide();
+                        $("#content").show();
+                        $('#leaderboard_modal').show();
+                    }
+                });
+            });
+            
 
             $('#endGame').click(function(e) {
                 Swal.fire({
