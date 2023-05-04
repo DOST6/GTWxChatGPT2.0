@@ -265,6 +265,7 @@ class Api extends BaseController
                                 $player_scores[$name]=$score;
                             }
                         } else { //player has not played before
+                            array_pop($player_scores);
                             $player_scores[$name]=$score;
                         }
                     } else { //score is less than the last entry but entries have not reached 20 items
