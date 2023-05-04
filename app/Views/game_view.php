@@ -246,7 +246,7 @@
                                 <button class="w3-button w3-block w3-orange w3-round-large w3-large" id="guessWord" onclick="$('#guess_modal').show()" <?= ($guessed || $next_round)?"disabled":"" ?>>Guess Word <i class='far fa-comment-dots'></i></button>
                             </div>
                             <div class="w3-col m3 w3-panel">
-                                <button class="w3-button w3-block w3-green w3-round-large w3-large w3-hover-blue" id="getClue" <?= ($guessed || $next_round)?"disabled":"" ?>>Get Clue <i class='far fa-lightbulb'></i></button>
+                                <button class="w3-button w3-block w3-green w3-round-large w3-large" id="getClue" <?= ($guessed || $next_round)?"disabled":"" ?>>Get Clue <i class='far fa-lightbulb'></i></button>
                             </div>
                             <div class="w3-col m3 w3-panel">
                                 <button class="w3-button w3-block w3-red  w3-round-large w3-large" id="endGame">End Game <i class='fas fa-power-off'></i></button>
@@ -470,39 +470,85 @@
             $("#checkAnswer").click(function () {
 
                 let guess = $("#guess").val();
-                console.log(guess);
+                //console.log(guess);
                 if (guess != "") {
-                    $("#guess_modal").hide();
-                    $("#checkAnswer").prop('disabled', true);
-                    $("#guess").prop('readonly', true);
-                    
-                    $('html, body').animate({
-                        scrollTop: $("#cat_clue").offset().top,
+                    $.ajax({
+                        url: '<?= base_url('api/check_answer') ?>',
+                        type: 'post',
+                        data: { answer: guess },
+                        beforeSend: function () {
+                            // Show image container
+                            $("#guess_modal").hide();
+                            $("#checkAnswer").prop('disabled', true);
+                            $("#guess").prop('readonly', true);
+                            $("#content").hide();
+                            $("#loader").show();
                         },
-                        500
-                    );
-                    //$.post("<?= base_url('check_answer') ?>",
-                    $.post("<?= base_url('api/check_answer') ?>",
-                    {
-                        answer: guess,
-                    },
-                    function (data, status) {
-                        console.log(data);
-                        //$("#message").html(data.message);
-                        $("#guess").val("");
-                        $("#num_games_played").html(data.num_games_played);
-                        $("#num_attempts").html(data.num_attempts);
-                        $("#num_wins").html(data.num_wins);
-                        $("#score").html(data.score);
-                        if (data.next_round === true) {
-                            $("#getClue").prop('disabled', true);
-                            $("#guessWord").prop('disabled', true);
+                        success: function (data, status) {
+                            console.log(data);
+                            //$("#message").html(data.message);
+                            $("#guess").val("");
+                            $("#num_games_played").html(data.num_games_played);
+                            $("#num_attempts").html(data.num_attempts);
+                            $("#num_wins").html(data.num_wins);
+                            $("#score").html(data.score);
+                            if (data.next_round === true) {
+                                $("#getClue").prop('disabled', true);
+                                $("#guessWord").prop('disabled', true);
+                            }
+                            Swal.fire({
+                                icon: data.icon,
+                                title: 'Result',
+                                html: data.message,
+                            });
+                        },
+                        complete: function (data) {
+                            // Hide image container
+                            $("#loader").hide();
+                            $("#content").show();
+                            $('html, body').animate({
+                                scrollTop: $("#cat_clue").offset().top,
+                                },
+                                500
+                            );
                         }
-                        Swal.fire({
-                            icon: data.icon,
-                            title: 'Result',
-                            html: data.message,
-                        });
+
+                        //let guess = $("#guess").val();
+                        //console.log(guess);
+                        //if (guess != "") {
+                        /* $("#guess_modal").hide();
+                        $("#checkAnswer").prop('disabled', true);
+                        $("#guess").prop('readonly', true); */
+                        
+                        /* $('html, body').animate({
+                            scrollTop: $("#cat_clue").offset().top,
+                            },
+                            500
+                        ); */
+                        //$.post("<?= base_url('check_answer') ?>",
+                        /* $.post("<?= base_url('api/check_answer') ?>",
+                        {
+                            answer: guess,
+                        }, */
+                        /* function (data, status) {
+                            console.log(data);
+                            //$("#message").html(data.message);
+                            $("#guess").val("");
+                            $("#num_games_played").html(data.num_games_played);
+                            $("#num_attempts").html(data.num_attempts);
+                            $("#num_wins").html(data.num_wins);
+                            $("#score").html(data.score);
+                            if (data.next_round === true) {
+                                $("#getClue").prop('disabled', true);
+                                $("#guessWord").prop('disabled', true);
+                            }
+                            Swal.fire({
+                                icon: data.icon,
+                                title: 'Result',
+                                html: data.message,
+                            });
+                        }); */
+                        
                     });
                 } else {
                     Swal.fire({
