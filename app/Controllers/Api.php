@@ -253,21 +253,30 @@ class Api extends BaseController
         if($score > 0) {
             if(file_exists($path)) {
                 $data = file_get_contents($path); //data read from json file
-                //print_r($data);
-                if($data != "") {
+                //print_r($data); die();
+                if($data != "") { //top scorers exists
                     $player_scores = json_decode($data, true);  //decode data to associative array
-                    if($score > end($player_scores)) {
+                    if($score > end($player_scores)) { //score is larger than last entry on top scores list
                         //print_r($player_scores);
-                        if (array_key_exists($name,$player_scores)) {
-                            if($score > $player_scores[$name]) {
+                        //echo "score is larger than ".end($player_scores)
+                        if (array_key_exists($name,$player_scores)) { //player has played previously
+                            $prev_score = $player_scores[$name]*1;
+                            if(($score*1) > ($player_scores[$name])*1) { //current score is larger than previous score
                                 $player_scores[$name]=$score;
                             }
-                        } else {
+                        } else { //player has not played before
                             $player_scores[$name]=$score;
                         }
-                    } else {
-                        if(count($player_scores)<100) {
-                            $player_scores[$name]=$score;
+                    } else { //score is less than the last entry but entries have not reached 20 items
+                        if(count($player_scores)<20) {
+                            if (array_key_exists($name,$player_scores)) { //player has played previously
+                                $prev_score = $player_scores[$name]*1;
+                                if(($score*1) > ($player_scores[$name])*1) { //current score is larger than previous score
+                                    $player_scores[$name]=$score;
+                                }
+                            } else { //player has not played before
+                                $player_scores[$name]=$score;
+                            }
                         }
                     }
                     arsort($player_scores);
