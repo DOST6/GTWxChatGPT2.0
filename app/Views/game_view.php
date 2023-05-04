@@ -98,7 +98,7 @@
             <!-- Header -->
             <div class="w3-container w3-row" style="margin-top:0px">
                 <div class="w3-col l1 w3-padding"></div>
-                <div class="w3-col l3 w3-padding" style="text-shadow:3px 1px 0 #444">
+                <div class="w3-col l3 w3-padding" style="text-shadow:2px 1px 0 #444">
                     <h1 class="w3-xxlarge w3-text-blue"><b>Guess the word</b></h1>
                     <h1 class="w3-xlarge w3-text-red"><b>with ChatGPT.</b></h1>
                     <!-- <hr style="width:100px;border:5px solid red" class="w3-round"> -->
