@@ -152,7 +152,7 @@ class Api extends BaseController
             if($num_attempt >= count($clues_arr)) {
                 session()->set(['next_round'=>true]); //no more clues.
                 $data = $this->get_game_stats();
-                $data['clue'] = "<span class='w3-text-red'>No more clues. You lose.</span><br>The answer is: <span class='w3-text-orange'><b>".session()->get('secret_word')."</b>.</span><br><span class='w3-medium w3-text-white'>Click <b>Next Round</b> or <b>End Game</b>.</span></span>";
+                $data['clue'] = "<span class='w3-text-red'>No more clues. You lose.</span><br>The answer is: <span class='w3-text-green'><b>".session()->get('secret_word')."</b>.</span><br><span class='w3-medium w3-text-white'>Click <b>Next Round</b> or <b>End Game</b>.</span></span>";
                 //$data['next_round'] = true;
                 return $this->response->setJSON($data);
             } else {
@@ -183,6 +183,8 @@ class Api extends BaseController
                         session()->set(['next_round'=>true]);
                         session()->set(['guessed'=>TRUE]);
                         $data = $this->get_game_stats();
+                        //save score
+                        $this->save_score();
                         $data['icon'] = "success";
                         $data['message'] = "<span class='w3-text-green'>You guessed it - <b>".session()->get("secret_word")."</b>!<br><span class='w3-medium w3-text-gray'>Click <b>Next Round</b> or <b>End Game</b>.</span></span>";
                         //$data['next_round'] = true;
@@ -221,45 +223,7 @@ class Api extends BaseController
     public function end_game() { //Aldwin
         if(session()->get("started") == true) {
             //record score
-            $name = session()->get('player_name');
-            $score = session()->get('score');
-            $player_scores = array();
-            $path = 'player_scores.json';
-            if($score > 0) {
-                if(file_exists($path)) {
-                    $data = file_get_contents($path); //data read from json file
-                    //print_r($data);
-                    if($data != "") {
-                        $player_scores = json_decode($data, true);  //decode data to associative array
-                        if($score > end($player_scores)) {
-                            //print_r($player_scores);
-                            if (array_key_exists($name,$player_scores)) {
-                                if($score > $player_scores[$name]) {
-                                    $player_scores[$name]=$score;
-                                }
-                            } else {
-                                $player_scores[$name]=$score;
-                            }
-                        } else {
-                            if(count($player_scores)<100) {
-                                $player_scores[$name]=$score;
-                            }
-                        }
-                        arsort($player_scores);
-                    } else {
-                        $player_scores[$name]=$score;
-                    }
-
-                    //print_r($player_scores);
-
-                    // Convert JSON data from an array to a string
-                    $jsonString = json_encode($player_scores, JSON_PRETTY_PRINT);
-                    // Write in the file
-                    $fp = fopen($path, 'w');
-                    fwrite($fp, $jsonString);
-                    fclose($fp);
-                }
-            }
+            $this->save_score();
 
             $session_data = [
                 'started' => FALSE,
@@ -278,6 +242,49 @@ class Api extends BaseController
             session()->set($session_data);
         }
         return redirect()->to("/");
+    }
+
+    private function save_score() {
+        
+        $name = session()->get('player_name');
+        $score = session()->get('score');
+        $player_scores = array();
+        $path = 'player_scores.json';
+        if($score > 0) {
+            if(file_exists($path)) {
+                $data = file_get_contents($path); //data read from json file
+                //print_r($data);
+                if($data != "") {
+                    $player_scores = json_decode($data, true);  //decode data to associative array
+                    if($score > end($player_scores)) {
+                        //print_r($player_scores);
+                        if (array_key_exists($name,$player_scores)) {
+                            if($score > $player_scores[$name]) {
+                                $player_scores[$name]=$score;
+                            }
+                        } else {
+                            $player_scores[$name]=$score;
+                        }
+                    } else {
+                        if(count($player_scores)<100) {
+                            $player_scores[$name]=$score;
+                        }
+                    }
+                    arsort($player_scores);
+                } else {
+                    $player_scores[$name]=$score;
+                }
+
+                //print_r($player_scores);
+
+                // Convert JSON data from an array to a string
+                $jsonString = json_encode($player_scores, JSON_PRETTY_PRINT);
+                // Write in the file
+                $fp = fopen($path, 'w');
+                fwrite($fp, $jsonString);
+                fclose($fp);
+            }
+        }
     }
 
     public function leaderboard() {
@@ -339,7 +346,7 @@ class Api extends BaseController
 
     protected function request_word($category) { //Pao
         //$prompt = "Suggest a ".$category.".";
-        $prompt = "Suggest a ".$category.", no punctuations, no numbers.";
+        $prompt = "Suggest a ".$category.", no punctuations, no numbers. Do not concatenate.";
         $word = $this->chatGPT($prompt, round($this->rand_float(0.01,2.00),2) );
         if(substr($word,-1)==".") {
             $word = substr($word,strlen($word)-1); //remove trailing period

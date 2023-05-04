@@ -69,31 +69,32 @@
 <body class="bgimg">
     <div class="main-content">
         <!-- Sidebar/menu -->
-        <nav class="w3-collapse w3-top w3-large w3-padding w3-text-white bg-theme"
+        <!-- <nav class="w3-collapse w3-top w3-large w3-padding w3-text-white bg-theme"
             style="z-index:3; width:300px; font-weight:bold; display: none;" id="sidebar">
             <div><span onclick="w3_close()" class="w3-button w3-red w3-large w3-hover-white w3-right">&times;</span></div>
             <div class="w3-bar-block">
                 <a href="#" onclick="w3_close()" class="w3-bar-item w3-button w3-hover-white">Home</a>
                 <a href="#instructions" onclick="w3_close(); document.getElementById('instructions_modal').style.display='block'; " class="w3-bar-item w3-button w3-hover-white">Instructions</a>
                 <a href="#game" onclick="w3_close()" class="w3-bar-item w3-button w3-hover-white">Game</a>
-                <a href="#leaderboard" id="leaderboard" class="w3-bar-item w3-button w3-hover-white">Leaderboard</a>
-                <!-- <a href="#contact" onclick="w3_close()" class="w3-bar-item w3-button w3-hover-white">Group Members</a> -->
+                <a href="#leaderboard" id="leaderboard-x" class="w3-bar-item w3-button w3-hover-white">Leaderboard</a>
             </div>
-        </nav>
+        </nav> -->
         <!-- Overlay effect when opening sidebar on small screens -->
-        <div class="w3-overlay" onclick="w3_close()" style="cursor:pointer" title="close side menu"
-            id="myOverlay"></div>
+        <!-- <div class="w3-overlay" onclick="w3_close()" style="cursor:pointer" title="close side menu"
+            id="myOverlay"></div> -->
         <!-- Image loader -->
         <div id='loader' class="w3-overlay w3-black " style="z-index: 5; opacity: 0.9">
             <div class="w3-center w3-padding-top-48"><img class="w3-image" src='loader_red.gif'></div>
         </div>
-        <!-- Top menu on small screens -->
-        <div class="w3-container w3-top-left w3-xlarge">
-            <a href="javascript:void(0)" class="w3-button" onclick="w3_open()">☰</a>
-        </div>
         <!-- !PAGE CONTENT! -->
         <div class="w3-container" id="main">
-
+        <!-- Top menu -->
+        <div class="w3-container w3-top-left w3-large w3-panel">
+            <!-- <a href="javascript:void(0)" class="w3-button" onclick="w3_open()">☰</a> -->
+            <a href="#instructions" onclick="$('#instructions_modal').show(); " class="w3-button bg-opacity w3-hover-white w3-right w3-round-xlarge w3-margin-right" title="Instructions"><img class="w3-image" src="how-to.png" width="50px"></a>
+            
+            <a href="#leaderboard" id="leaderboard" class="w3-button bg-opacity w3-hover-white w3-right w3-round-xlarge w3-margin-right" title="Leaderboard"><img class="w3-image" src="leaderboard.png" width="50px"></a>
+        </div>
             <!-- Header -->
             <div class="w3-container w3-row" style="margin-top:0px">
                 <div class="w3-col l1 w3-padding"></div>
@@ -101,7 +102,7 @@
                     <h1 class="w3-xxlarge w3-text-blue"><b>Guess the word</b></h1>
                     <h1 class="w3-xlarge w3-text-red"><b>with ChatGPT.</b></h1>
                     <!-- <hr style="width:100px;border:5px solid red" class="w3-round"> -->
-                    <h3 class="w3-panel w3-text-white" id="welcome" style="display: <?= $started?"block":"none" ?>">Let's Play <span class="w3-xlarge" id="player"><?= $player_name ?>!</span></h3>
+                    <h3 class="w3-panel w3-text-white" id="welcome" style="display: <?= $started?"block":"none" ?>">Let's Play <span class="w3-xlarge" id="player"><?= $player_name ?></span>!</h3>
                 </div>
                 <div class="w3-col l8 w3-padding">
                     <!-- Stats -->
@@ -143,7 +144,7 @@
                 
                 <div class="w3-col m1 w3-padding"></div>
                 <div class="w3-col m6 w3-container w3-card-4 w3-round-large w3-padding bg-opacity ">
-                    <h1 class="w3-xlarge w3-text-red"><b>Instructions.</b></h1>
+                    <h1 class="w3-xlarge w3-text-red" style="text-shadow:2px 1px 0 #444"><b>Instructions.</b></h1>
                     <hr style="width:100px;border:3px solid red" class="w3-round">
 
                     <h3>How to play:</h3>
@@ -177,7 +178,7 @@
             <div id="instructions_modal" class="w3-modal">
                 <div class="w3-modal-content w3-container w3-padding-large w3-padding-24 w3-card-4 w3-round-large bg-theme" id="instructions">
                     <span onclick="document.getElementById('instructions_modal').style.display='none'" class="w3-button w3-display-topright w3-xxlarge w3-hover-none w3-round-large">&times;</span>
-                    <h1 class="w3-xlarge w3-text-red"><b>Instructions.</b></h1>
+                    <h1 class="w3-xlarge w3-text-red" style="text-shadow:2px 1px 0 #444"><b>Instructions.</b></h1>
                     <hr style="width:100px;border:3px solid red" class="w3-round">
 
                     <h3>How to play:</h3>
@@ -198,7 +199,7 @@
             <div id="leaderboard_modal" class="w3-modal">
                 <div class="w3-modal-content w3-container w3-padding-large w3-padding-24 w3-card-4 w3-round-large bg-theme" id="instructions">
                     <span onclick="document.getElementById('leaderboard_modal').style.display='none'" class="w3-button w3-display-topright w3-xxlarge w3-hover-none w3-round-large">&times;</span>
-                    <h1 class="w3-xlarge w3-text-red"><b>Leaderboard.</b></h1>
+                    <h1 class="w3-xlarge w3-text-red" style="text-shadow:2px 1px 0 #444"><b>Leaderboard.</b></h1>
                     <hr style="width:100px;border:3px solid red" class="w3-round">
 
                     <h3>Top Players</h3>
@@ -563,7 +564,7 @@
                     type: 'post',
                     beforeSend: function () {
                         // Show image container
-                        w3_close();
+                        //w3_close();
                         $("#loader").show();
                         $("#content").hide();
                     },
