@@ -357,7 +357,7 @@ class Api extends BaseController
     protected function request_word($category) { //Pao
         //$prompt = "Suggest a ".$category.".";
         $prompt = "Suggest one ".$category.". Don't include punctuations. Don't include numbers. Do not concatenate words.";
-        $word = $this->chatGPT($prompt, round($this->rand_float(0.01,2.00),2) );
+        $word = $this->chatGPT($prompt /* round($this->rand_float(0.01,2.00),2)  */);
         if(substr($word,-1)==".") {
             $word = substr($word,strlen($word)-1); //remove trailing period
         }
@@ -367,7 +367,7 @@ class Api extends BaseController
     protected function request_clues($word) { //Hannah
         $clues_arr = array();
         if(strlen($word) > 1) {
-            $prompt = "Suggest 10 statements that will serve as clue for ".$word." without using the word ".$word.".";
+            $prompt = "Suggest 10 statements that will serve as clue for ".$word.". Don't mention ".$word.".";
             $clues = trim($this->chatGPT($prompt)); //trim to remove extra line breaks
             $clues_arr = explode("\n", $clues);
         }

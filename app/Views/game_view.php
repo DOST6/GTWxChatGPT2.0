@@ -317,7 +317,7 @@
             $("#startGame").click(function () {
 
                 let playerName = $("#playerName").val();
-                console.log(name);
+                //console.log(name);
                 if (playerName != "") {
                     $.ajax({
                         url: '<?= base_url('api/start_game') ?>',
@@ -328,7 +328,7 @@
                             $("#content").hide();
                         },
                         success: function (data, status) {
-                            console.log(data);
+                            //console.log(data);
                             $("#player").html(data.player_name);
                             $("#welcome").show();
                             $("#game").show();
@@ -363,7 +363,8 @@
                         $("#content").hide();
                     },
                     success: function (data, status, jqXhr) {
-                        console.log(data);
+                        //console.log(data);
+                        console.log('Category set.');
                         $("#category").html(data.category.categoryTitle);
                         $("#num_games_played").html(data.num_games_played);
                         $("#num_attempts").html(data.num_attempts);
@@ -435,7 +436,7 @@
                         $("#content").hide();
                     },
                     success: function (data, status) {
-                        console.log(data);
+                        //console.log(data);
                         $("#clue").html(data.clue);
                         $("#num_games_played").html(data.num_games_played);
                         $("#num_attempts").html(data.num_attempts);
@@ -485,7 +486,7 @@
                             $("#loader").show();
                         },
                         success: function (data, status) {
-                            console.log(data);
+                            //console.log(data);
                             //$("#message").html(data.message);
                             $("#guess").val("");
                             $("#num_games_played").html(data.num_games_played);
@@ -615,7 +616,7 @@
                         $("#content").hide();
                     },
                     success: function (data, status) {
-                        console.log(data);
+                        //console.log(data);
                         $("#leaderboard_list").empty();
                         for (const key in data) {
                             //console.log(`${key} : ${data[key]}`);
