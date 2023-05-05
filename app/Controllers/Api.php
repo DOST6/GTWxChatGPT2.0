@@ -24,7 +24,7 @@ class Api extends BaseController
         ['categoryTitle'=>"Foods", 'noun'=>"food"],
         ['categoryTitle'=>"Colors", 'noun'=>"color"],
         ['categoryTitle'=>"Brands", 'noun'=>"brand"],
-        ['categoryTitle'=>"Famous Scientists", 'noun'=>"scientist"],
+        ['categoryTitle'=>"Famous Scientists", 'noun'=>"famous scientist"],
         ['categoryTitle'=>"Musical Instruments", 'noun'=>"musical instrument"],
         ['categoryTitle'=>"Mythological creatures", 'noun'=>"mythological creature"],
         ['categoryTitle'=>"Emotions", 'noun'=>"emotion"],
@@ -356,7 +356,7 @@ class Api extends BaseController
 
     protected function request_word($category) { //Pao
         //$prompt = "Suggest a ".$category.".";
-        $prompt = "Suggest a ".$category.", no punctuations, no numbers. Do not concatenate.";
+        $prompt = "Suggest one ".$category.", no punctuations, no numbers. Do not concatenate.";
         $word = $this->chatGPT($prompt, round($this->rand_float(0.01,2.00),2) );
         if(substr($word,-1)==".") {
             $word = substr($word,strlen($word)-1); //remove trailing period
@@ -391,7 +391,8 @@ class Api extends BaseController
             'model' => "text-davinci-003",
             'prompt' => $prompt,
             'max_tokens' => 2048, //default is 16
-            'temperature' => $temperature
+            'temperature' => 1.5
+            //'temperature' => $temperature
          );
 
         // Send request
