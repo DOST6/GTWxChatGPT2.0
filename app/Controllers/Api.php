@@ -356,7 +356,7 @@ class Api extends BaseController
 
     protected function request_word($category) { //Pao
         //$prompt = "Suggest a ".$category.".";
-        $prompt = "Suggest one ".$category.", no punctuations, no numbers. Do not concatenate.";
+        $prompt = "Suggest one ".$category.". Don't include punctuations. Don't include numbers. Do not concatenate words.";
         $word = $this->chatGPT($prompt, round($this->rand_float(0.01,2.00),2) );
         if(substr($word,-1)==".") {
             $word = substr($word,strlen($word)-1); //remove trailing period
@@ -380,7 +380,8 @@ class Api extends BaseController
 
         $client = \Config\Services::curlrequest();
 
-        $apiURL = "https://api.openai.com/v1/completions";
+        //$apiURL = "https://api.openai.com/v1/completions"; //da-vinci
+        $apiURL = "https://api.openai.com/v1/chat/completions"; //gpt-3.5
         
         $headerData = array(
             'Content-Type' => 'application/json',
@@ -388,8 +389,10 @@ class Api extends BaseController
          );
 
         $postData = array(
-            'model' => "text-davinci-003",
-            'prompt' => $prompt,
+            //'model' => "text-davinci-003",
+            'model' => "gpt-3.5-turbo",
+            //'prompt' => $prompt, //da-vinci
+            'messages' => [array("role"=> "user", "content" => $prompt)],
             'max_tokens' => 2048, //default is 16
             'temperature' => 1.5
             //'temperature' => $temperature
@@ -411,9 +414,13 @@ class Api extends BaseController
     
             // Read data 
             $response_obj = json_decode($response->getBody());
+
+            //return $response_obj;
+
             $choices_arr = $response_obj->choices;
             $choices_obj = $choices_arr[0];
-            return $choices_obj->text;  
+            //return $choices_obj->text;  //da-vinci
+            return $choices_obj->message->content;  //gpt 3.5
         } else{
            echo "failed";
            die;
@@ -423,5 +430,15 @@ class Api extends BaseController
     private function rand_float($st_num=0, $end_num=1, $mul=1000000) {
         if ($st_num>$end_num) return false;
         return mt_rand($st_num*$mul,$end_num*$mul)/$mul;
+    }
+
+    public function test_chat() {
+        
+        if($this->request->getMethod() == 'post') {
+            $post_data = $this->request->getPost();
+            if($post_data['prompt'] != "") {
+                print_r($this->chatGPT($post_data['prompt']));
+            }
+        }
     }
 }
