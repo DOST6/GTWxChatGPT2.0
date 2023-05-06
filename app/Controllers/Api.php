@@ -138,6 +138,19 @@ class Api extends BaseController
                 $clues_arr = $this->request_clues(session()->get("secret_word"));
                 if(count($clues_arr) > 0) {
                     session()->set(['clues'=>$clues_arr]);
+                } else { //2nd try 
+                    $clues_arr = $this->request_clues(session()->get("secret_word"));                  
+                    if(count($clues_arr) > 0) {
+                        session()->set(['clues'=>$clues_arr]);
+                    } else { //third and last try
+                        $clues_arr = $this->request_clues(session()->get("secret_word"));
+                        if(count($clues_arr) > 0) {
+                            session()->set(['clues'=>$clues_arr]);
+                        } else {
+                            $clues_arr = ["Unable to get clues. Please reload."];
+                            session()->set(['clues'=>$clues_arr]);
+                        }
+                    }
                 }
                 return $this->response->setJSON(['info'=>"Clues set."]);
             }
@@ -357,7 +370,7 @@ class Api extends BaseController
     protected function request_word($category) { //Pao
         //$prompt = "Suggest a ".$category.".";
         $prompt = "Suggest one ".$category.". Don't include punctuations. Don't include numbers. Do not concatenate words.";
-        $word = $this->chatGPT($prompt /* round($this->rand_float(0.01,2.00),2)  */);
+        $word = $this->chatGPT($prompt, 1.5);
         if(substr($word,-1)==".") {
             $word = substr($word,strlen($word)-1); //remove trailing period
         }
@@ -368,14 +381,15 @@ class Api extends BaseController
         $clues_arr = array();
         if(strlen($word) > 1) {
             $prompt = "Suggest 10 statements that will serve as clue for ".$word.". Don't mention ".$word.".";
-            $clues = trim($this->chatGPT($prompt)); //trim to remove extra line breaks
+            $clues = trim($this->chatGPT($prompt,0.8)); //trim to remove extra line breaks
             $clues_arr = explode("\n", $clues);
         }
         return $clues_arr;
     }
 
-    private function chatGPT($prompt, $temperature=0.8) { // Garry
+    private function chatGPT($prompt, $temperature) { // Garry
         
+        //$temp = $temperature != 0 ? $temperature : 1.5;
         $OPENAI_API_KEY = getenv('OPENAI_API_KEY');
 
         $client = \Config\Services::curlrequest();
@@ -394,7 +408,7 @@ class Api extends BaseController
             //'prompt' => $prompt, //da-vinci
             'messages' => [array("role"=> "user", "content" => $prompt)],
             'max_tokens' => 2048, //default is 16
-            'temperature' => 1.5
+            'temperature' => $temperature
             //'temperature' => $temperature
          );
 
@@ -422,8 +436,9 @@ class Api extends BaseController
             //return $choices_obj->text;  //da-vinci
             return $choices_obj->message->content;  //gpt 3.5
         } else{
-           echo "failed";
-           die;
+            return "ChatGPT may be busy at this time. Please reload and try again.\n";
+           //echo "failed";
+           //die;
         }
     }
 
