@@ -364,7 +364,7 @@
                     },
                     success: function (data, status, jqXhr) {
                         //console.log(data);
-                        console.log('Category set.');
+                        console.log(JSON.parse('{"info": "Category set."}'));
                         $("#category").html(data.category.categoryTitle);
                         $("#num_games_played").html(data.num_games_played);
                         $("#num_attempts").html(data.num_attempts);

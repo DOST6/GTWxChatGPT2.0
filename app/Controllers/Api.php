@@ -138,21 +138,12 @@ class Api extends BaseController
                 $clues_arr = $this->request_clues(session()->get("secret_word"));
                 if(count($clues_arr) > 0) {
                     session()->set(['clues'=>$clues_arr]);
-                } else { //2nd try 
-                    $clues_arr = $this->request_clues(session()->get("secret_word"));                  
-                    if(count($clues_arr) > 0) {
-                        session()->set(['clues'=>$clues_arr]);
-                    } else { //third and last try
-                        $clues_arr = $this->request_clues(session()->get("secret_word"));
-                        if(count($clues_arr) > 0) {
-                            session()->set(['clues'=>$clues_arr]);
-                        } else {
-                            $clues_arr = ["Unable to get clues. Please reload."];
-                            session()->set(['clues'=>$clues_arr]);
-                        }
-                    }
+                    return $this->response->setJSON(['info'=>"Clues set."]);
+                } else {
+                    return $this->response->setJSON(['info'=>"Unable to get clues. Will try again when getting first clue"]);
                 }
-                return $this->response->setJSON(['info'=>"Clues set."]);
+            } else {
+                return $this->response->setJSON(['info'=>"Unable to get clues. Word is not set."]);
             }
         }
     }
@@ -161,22 +152,50 @@ class Api extends BaseController
         $data = array();
         if($this->request->getMethod() == 'post') {
             $clues_arr = session()->get("clues");
-            $num_attempt = session()->get('num_attempts');// == 0 ? 0 : session()->get('num_attempts');
-            if($num_attempt >= count($clues_arr)) {
-                session()->set(['next_round'=>true]); //no more clues.
-                $data = $this->get_game_stats();
-                $data['clue'] = "<span class='w3-text-red'>No more clues. You lose.</span><br>The answer is: <span class='w3-text-green'><b>".session()->get('secret_word')."</b>.</span><br><span class='w3-medium w3-text-white'>Click <b>Next Round</b> or <b>End Game</b>.</span></span>";
-                //$data['next_round'] = true;
-                return $this->response->setJSON($data);
+            if(count($clues_arr) <= 0 ) {
+                $clues_arr = $this->request_clues(session()->get("secret_word"));
+                if(count($clues_arr)>0) {
+                    session()->set(['clues'=>$clues_arr]);
+                    $num_attempt = session()->get('num_attempts');
+                    /* $if($num_attempt >= count($clues_arr)) {
+                        session()->set(['next_round'=>true]); //no more clues.
+                        $data = $this->get_game_stats();
+                        $data['clue'] = "<span class='w3-text-red'>No more clues-x. You lose.</span><br>The answer is: <span class='w3-text-green'><b>".session()->get('secret_word')."</b>.</span><br><span class='w3-medium w3-text-white'>Click <b>Next Round</b> or <b>End Game</b>.</span></span>";
+                        //$data['next_round'] = true;
+                        return $this->response->setJSON($data);
+                    } else { */
+                        session()->set(['num_attempts'=>($num_attempt+1)]);
+                        $data = $this->get_game_stats();
+                        //$data['next_round'] = false;
+                        //$data['secret_word'] = session()->get('secret_word');
+                        $data['clue'] = $clues_arr[$num_attempt];
+                        return $this->response->setJSON($data);
+                        
+                        //return $this->response->setJSON(['clue'=>$clues_arr[$num_attempt]]);
+                    //}
+                } else {
+                    $data = $this->get_game_stats();
+                    $data['clue'] = "ChatGPT is a bit busy. Please give it a few seconds, then get another clue. No worries, your number of attempts is not affected.";
+                    return $this->response->setJSON($data);
+                }
             } else {
-                session()->set(['num_attempts'=>($num_attempt+1)]);
-                $data = $this->get_game_stats();
-                //$data['next_round'] = false;
-                //$data['secret_word'] = session()->get('secret_word');
-                $data['clue'] = $clues_arr[$num_attempt];
-                return $this->response->setJSON($data);
-                
-                //return $this->response->setJSON(['clue'=>$clues_arr[$num_attempt]]);
+                $num_attempt = session()->get('num_attempts');// == 0 ? 0 : session()->get('num_attempts');
+                if($num_attempt >= count($clues_arr)) {
+                    session()->set(['next_round'=>true]); //no more clues.
+                    $data = $this->get_game_stats();
+                    $data['clue'] = "<span class='w3-text-red'>No more clues. You lose.</span><br>The answer is: <span class='w3-text-green'><b>".session()->get('secret_word')."</b>.</span><br><span class='w3-medium w3-text-white'>Click <b>Next Round</b> or <b>End Game</b>.</span></span>";
+                    //$data['next_round'] = true;
+                    return $this->response->setJSON($data);
+                } else {
+                    session()->set(['num_attempts'=>($num_attempt+1)]);
+                    $data = $this->get_game_stats();
+                    //$data['next_round'] = false;
+                    //$data['secret_word'] = session()->get('secret_word');
+                    $data['clue'] = $clues_arr[$num_attempt];
+                    return $this->response->setJSON($data);
+                    
+                    //return $this->response->setJSON(['clue'=>$clues_arr[$num_attempt]]);
+                }
             }
         }
     }
@@ -382,7 +401,15 @@ class Api extends BaseController
         if(strlen($word) > 1) {
             $prompt = "Suggest 10 statements that will serve as clue for ".$word.". Don't mention ".$word.".";
             $clues = trim($this->chatGPT($prompt,0.8)); //trim to remove extra line breaks
-            $clues_arr = explode("\n", $clues);
+            if($clues != "") {
+                $temp_clues_arr = explode("\n", $clues);
+                foreach($temp_clues_arr as $clue) {
+                    if($clue != "") {
+                        array_push($clues_arr, $clue);
+                    }
+                }
+            }
+            
         }
         return $clues_arr;
     }
@@ -393,6 +420,7 @@ class Api extends BaseController
         $OPENAI_API_KEY = getenv('OPENAI_API_KEY');
 
         $client = \Config\Services::curlrequest();
+        $curl_error = false;
 
         //$apiURL = "https://api.openai.com/v1/completions"; //da-vinci
         $apiURL = "https://api.openai.com/v1/chat/completions"; //gpt-3.5
@@ -413,32 +441,45 @@ class Api extends BaseController
          );
 
         // Send request
-        $response = $client->post($apiURL,[
-            'debug' => true,
-            'verify' => getenv('curl_verify_ssl')==0?false:true, //set to false for testing purposes on local machine only
-            'headers'=>$headerData,
-            'json' => $postData
-         ]);
+        try {
+            $response = $client->post($apiURL,[
+                'debug' => true,
+                'http_errors' => false,
+                'verify' => getenv('curl_verify_ssl')==0?false:true, //set to false for testing purposes on local machine only
+                'headers'=>$headerData,
+                'json' => $postData
+            ]);
+        }
+        catch(Exception $e) {
+            return null;
+            $curl_error = true;
+        }
 
-         // Read response
-        $code = $response->getStatusCode();
-        $reason = $response->getReason();
-    
-        if($code == 200){ // Success
-    
-            // Read data 
-            $response_obj = json_decode($response->getBody());
+        if(!$curl_error) {
+            // Read response
+            $code = $response->getStatusCode();
+            $reason = $response->getReason();
+        
+            if($code == 200){ // Success
+        
+                // Read data 
+                $response_obj = json_decode($response->getBody());
+                if($response_obj != null) {
 
-            //return $response_obj;
+                    //return $response_obj;
 
-            $choices_arr = $response_obj->choices;
-            $choices_obj = $choices_arr[0];
-            //return $choices_obj->text;  //da-vinci
-            return $choices_obj->message->content;  //gpt 3.5
-        } else{
-            return "ChatGPT may be busy at this time. Please reload and try again.\n";
-           //echo "failed";
-           //die;
+                    $choices_arr = $response_obj->choices;
+                    $choices_obj = $choices_arr[0];
+                    //return $choices_obj->text;  //da-vinci
+                    return $choices_obj->message->content;  //gpt 3.5
+                } else {
+                    return "ChatGPT may be busy at this time. Please reload and try again.\n";
+                }
+            } else {
+                return null;
+            //echo "failed";
+            //die;
+            }
         }
     }
 
