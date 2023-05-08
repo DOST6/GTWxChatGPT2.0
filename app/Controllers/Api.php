@@ -175,7 +175,7 @@ class Api extends BaseController
                     //}
                 } else {
                     $data = $this->get_game_stats();
-                    $data['clue'] = "Your a word genius! ChatGPT has a hard time keeping up with you.<p class='w3-medium'>Please give it a few seconds, then try to get another clue. No worries, this doesn't affect your score.</p>";
+                    $data['clue'] = session()->get('num_games_played')." rounds? You're a word genius! <p class='w3-medium'>ChatGPT has a hard time keeping up with you. Please give it a few seconds, then try to get another clue. No worries, this doesn't affect your score.</p>";
                     return $this->response->setJSON($data);
                 }
             } else {
