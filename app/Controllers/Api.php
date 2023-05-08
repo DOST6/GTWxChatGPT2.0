@@ -19,7 +19,7 @@ class Api extends BaseController
         ['categoryTitle'=>"Movies", 'noun'=>"movie"],
         ['categoryTitle'=>"TV Shows", 'noun'=>"tv show"],
         ['categoryTitle'=>"Celebrities", 'noun'=>"celebrity"],
-        ['categoryTitle'=>"Songs", 'noun'=>"famous song"],
+        ['categoryTitle'=>"Songs", 'noun'=>"popular song"],
         ['categoryTitle'=>"Sports", 'noun'=>"sport"],
         ['categoryTitle'=>"Foods", 'noun'=>"food"],
         ['categoryTitle'=>"Colors", 'noun'=>"color"],
