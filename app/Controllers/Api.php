@@ -175,7 +175,7 @@ class Api extends BaseController
                     //}
                 } else {
                     $data = $this->get_game_stats();
-                    $data['clue'] = "ChatGPT is a bit busy. Please give it a few seconds, then get another clue. No worries, your number of attempts is not affected.";
+                    $data['clue'] = "ChatGPT is a bit busy.<p class='w3-medium'>Please give it a few seconds, then try to get another clue. No worries, this doesn't affect your score.</p>";
                     return $this->response->setJSON($data);
                 }
             } else {
@@ -422,7 +422,7 @@ class Api extends BaseController
         $client = \Config\Services::curlrequest();
         $curl_error = false;
 
-        //$apiURL = "https://api.openai.com/v1/completions"; //da-vinci
+        //$apiURL = "https://api.openai.com/v1/completions"; //da-vinci, curie
         $apiURL = "https://api.openai.com/v1/chat/completions"; //gpt-3.5
         
         $headerData = array(
@@ -432,16 +432,18 @@ class Api extends BaseController
 
         $postData = array(
             //'model' => "text-davinci-003",
+            //'model' => "text-curie-001",
             'model' => "gpt-3.5-turbo",
-            //'prompt' => $prompt, //da-vinci
+            //'model' => "curie",
+            //'prompt' => $prompt, //da-vinci, curie
             'messages' => [array("role"=> "user", "content" => $prompt)],
-            'max_tokens' => 2048, //default is 16
+            'max_tokens' => 1024, //default is 16
             'temperature' => $temperature
             //'temperature' => $temperature
          );
 
         // Send request
-        try {
+        //try {
             $response = $client->post($apiURL,[
                 'debug' => true,
                 'http_errors' => false,
@@ -449,11 +451,11 @@ class Api extends BaseController
                 'headers'=>$headerData,
                 'json' => $postData
             ]);
-        }
+        /* }
         catch(Exception $e) {
             return null;
             $curl_error = true;
-        }
+        } */
 
         if(!$curl_error) {
             // Read response
@@ -470,7 +472,7 @@ class Api extends BaseController
 
                     $choices_arr = $response_obj->choices;
                     $choices_obj = $choices_arr[0];
-                    //return $choices_obj->text;  //da-vinci
+                    //return $choices_obj->text;  //da-vinci, curie
                     return $choices_obj->message->content;  //gpt 3.5
                 } else {
                     return "ChatGPT may be busy at this time. Please reload and try again.\n";
