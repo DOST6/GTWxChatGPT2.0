@@ -24,14 +24,14 @@ class Api extends BaseController
         ['categoryTitle'=>"Foods", 'noun'=>"food"],
         ['categoryTitle'=>"Colors", 'noun'=>"color"],
         ['categoryTitle'=>"Brands", 'noun'=>"brand"],
-        ['categoryTitle'=>"Famous Scientists", 'noun'=>"famous scientist"],
+        ['categoryTitle'=>"Famous Scientists", 'noun'=>"popular scientist"],
         ['categoryTitle'=>"Musical Instruments", 'noun'=>"musical instrument"],
         ['categoryTitle'=>"Mythological creatures", 'noun'=>"mythological creature"],
         ['categoryTitle'=>"Emotions", 'noun'=>"emotion"],
         ['categoryTitle'=>"Occupations", 'noun'=>"occupation"],
         ['categoryTitle'=>"Planets", 'noun'=>"planet"],
         ['categoryTitle'=>"Hobbies", 'noun'=>"hobby"],
-        ['categoryTitle'=>"Singer", 'noun'=>"famous singer"],
+        ['categoryTitle'=>"Singer", 'noun'=>"popular singer"],
         ['categoryTitle'=>"Fictional Characters", 'noun'=>"fictional character"]
     ];
 
